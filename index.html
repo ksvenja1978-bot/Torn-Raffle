@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Torn Raffle</title>
 
     <style>
@@ -19,9 +20,24 @@
 
         header {
             text-align: center;
-            padding: 35px 20px;
+            padding: 30px 20px;
             background: #171717;
             border-bottom: 1px solid #333;
+        }
+
+        .topbar {
+            max-width: 1000px;
+            margin: auto;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        select {
+            padding: 8px 12px;
+            border-radius: 7px;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
         }
 
         .fox {
@@ -77,6 +93,10 @@
 
         button:hover {
             opacity: 0.85;
+        }
+
+        #dashboard {
+            display: none;
         }
 
         .stats {
@@ -145,20 +165,6 @@
             font-size: 13px;
         }
 
-        #dashboard {
-            display: none;
-        }
-
-        #message {
-            min-height: 20px;
-            color: #bbb;
-        }
-
-        .player-id {
-            color: #999;
-            font-size: 14px;
-        }
-
         footer {
             text-align: center;
             padding: 35px;
@@ -168,6 +174,7 @@
         }
 
         @media (max-width: 700px) {
+
             .stats,
             .games {
                 grid-template-columns: 1fr;
@@ -183,12 +190,29 @@
 <body>
 
 <header>
-    <div class="fox">🦊</div>
-    <h1>Torn Raffle</h1>
-    <div class="subtitle">
-        Games, Raffles and Prizes for the Torn community
+
+    <div class="topbar">
+        <select id="language" onchange="changeLanguage()">
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="zh">🇨🇳 中文</option>
+        </select>
     </div>
+
+    <div class="fox">🦊</div>
+
+    <h1 data-i18n="title">
+        Torn Raffle
+    </h1>
+
+    <div class="subtitle" data-i18n="subtitle">
+        Spiele, Raffles und Gewinne für die Torn-Community
+    </div>
+
 </header>
+
 
 <main>
 
@@ -196,22 +220,25 @@
 
     <section class="box" id="loginBox">
 
-        <h2>Bei Torn anmelden</h2>
+        <h2 data-i18n="loginTitle">
+            Bei Torn anmelden
+        </h2>
 
-        <p>
+        <p data-i18n="loginDescription">
             Gib deinen Torn API-Key ein, um dich zu registrieren.
         </p>
 
         <input
             type="password"
             id="apiKey"
+            data-i18n-placeholder="apiPlaceholder"
             placeholder="Torn API-Key"
             autocomplete="off"
         >
 
         <br>
 
-        <button onclick="login()">
+        <button onclick="login()" data-i18n="loginButton">
             Bei Torn anmelden
         </button>
 
@@ -224,13 +251,11 @@
 
     <section class="box" id="dashboard">
 
-        <h2 id="welcomeText">
-            Willkommen!
-        </h2>
+        <h2 id="welcomeText"></h2>
 
-        <p class="player-id" id="playerId"></p>
+        <p id="playerId"></p>
 
-        <p>
+        <p data-i18n="loginSuccess">
             Du bist erfolgreich bei Torn Raffle angemeldet.
         </p>
 
@@ -243,23 +268,29 @@
 
         <div class="stat">
             <div class="stat-number">0</div>
-            <div class="stat-label">Registrierte Spieler</div>
+            <div class="stat-label" data-i18n="registered">
+                Registrierte Spieler
+            </div>
         </div>
 
         <div class="stat">
             <div class="stat-number">0</div>
-            <div class="stat-label">Spiele gespielt</div>
+            <div class="stat-label" data-i18n="gamesPlayed">
+                Spiele gespielt
+            </div>
         </div>
 
         <div class="stat">
             <div class="stat-number">0</div>
-            <div class="stat-label">Xanax ausgezahlt</div>
+            <div class="stat-label" data-i18n="paidOut">
+                Xanax ausgezahlt
+            </div>
         </div>
 
     </section>
 
 
-    <h2 style="text-align:center;">
+    <h2 style="text-align:center;" data-i18n="ourGames">
         Unsere Spiele
     </h2>
 
@@ -269,74 +300,116 @@
     <section class="games">
 
         <div class="game">
+
             <div class="game-icon">🎡</div>
-            <h3>Glücksrad</h3>
-            <p>
+
+            <h3 data-i18n="wheel">
+                Glücksrad
+            </h3>
+
+            <p data-i18n="wheelDescription">
                 Drehe das Rad und versuche dein Glück!
             </p>
-            <span class="coming-soon">
+
+            <span class="coming-soon" data-i18n="comingSoon">
                 DEMNÄCHST VERFÜGBAR
             </span>
+
         </div>
 
 
         <div class="game disabled">
+
             <div class="game-icon">🎟️</div>
-            <h3>Raffle</h3>
-            <p>
+
+            <h3 data-i18n="raffle">
+                Raffle
+            </h3>
+
+            <p data-i18n="raffleDescription">
                 Kaufe Tickets und gewinne tolle Preise.
             </p>
-            <span class="coming-soon">
+
+            <span class="coming-soon" data-i18n="comingSoon">
                 DEMNÄCHST VERFÜGBAR
             </span>
+
         </div>
 
 
         <div class="game disabled">
+
             <div class="game-icon">⚔️</div>
-            <h3>Double or Nothing</h3>
-            <p>
+
+            <h3>
+                Double or Nothing
+            </h3>
+
+            <p data-i18n="doubleDescription">
                 Verdopple deinen Gewinn oder verliere alles.
             </p>
-            <span class="coming-soon">
+
+            <span class="coming-soon" data-i18n="comingSoon">
                 DEMNÄCHST VERFÜGBAR
             </span>
+
         </div>
 
 
         <div class="game disabled">
+
             <div class="game-icon">💰</div>
-            <h3>Community Jackpot</h3>
-            <p>
+
+            <h3 data-i18n="jackpot">
+                Community Jackpot
+            </h3>
+
+            <p data-i18n="jackpotDescription">
                 Spiele um einen wachsenden Jackpot.
             </p>
-            <span class="coming-soon">
+
+            <span class="coming-soon" data-i18n="comingSoon">
                 DEMNÄCHST VERFÜGBAR
             </span>
+
         </div>
 
 
         <div class="game disabled">
+
             <div class="game-icon">🎁</div>
-            <h3>Daily Reward</h3>
-            <p>
+
+            <h3 data-i18n="daily">
+                Daily Reward
+            </h3>
+
+            <p data-i18n="dailyDescription">
                 Jeden Tag vorbeischauen und eine Belohnung sichern.
             </p>
-            <span class="coming-soon">
+
+            <span class="coming-soon" data-i18n="comingSoon">
                 DEMNÄCHST VERFÜGBAR
             </span>
+
         </div>
 
 
         <div class="game disabled">
+
             <div class="game-icon">❓</div>
-            <h3>Mystery Game</h3>
-            <p>
+
+            <h3 data-i18n="mystery">
+                Mystery Game
+            </h3>
+
+            <p data-i18n="mysteryDescription">
                 Ein weiteres Spiel wird später enthüllt.
             </p>
-            <span class="coming-soon">
+
+            <span class="coming-soon" data-i18n="comingSoon">
                 DEMNÄCHST VERFÜGBAR
             </span>
+
         </div>
 
     </section>
@@ -345,13 +418,201 @@
 
 
 <footer>
-    Torn Raffle – Projekt im Aufbau
+    Torn Raffle – <span data-i18n="project">
+        Projekt im Aufbau
+    </span>
     <br>
-    <small>Powered by the Torn community</small>
+    <small>
+        Powered by the Torn community
+    </small>
 </footer>
 
 
 <script>
+
+const translations = {
+
+    de: {
+        title: "Torn Raffle",
+        subtitle: "Spiele, Raffles und Gewinne für die Torn-Community",
+        loginTitle: "Bei Torn anmelden",
+        loginDescription: "Gib deinen Torn API-Key ein, um dich zu registrieren.",
+        apiPlaceholder: "Torn API-Key",
+        loginButton: "Bei Torn anmelden",
+        loginSuccess: "Du bist erfolgreich bei Torn Raffle angemeldet.",
+        registered: "Registrierte Spieler",
+        gamesPlayed: "Spiele gespielt",
+        paidOut: "Xanax ausgezahlt",
+        ourGames: "Unsere Spiele",
+        wheel: "Glücksrad",
+        wheelDescription: "Drehe das Rad und versuche dein Glück!",
+        raffle: "Raffle",
+        raffleDescription: "Kaufe Tickets und gewinne tolle Preise.",
+        doubleDescription: "Verdopple deinen Gewinn oder verliere alles.",
+        jackpot: "Community Jackpot",
+        jackpotDescription: "Spiele um einen wachsenden Jackpot.",
+        daily: "Daily Reward",
+        dailyDescription: "Jeden Tag vorbeischauen und eine Belohnung sichern.",
+        mystery: "Mystery Game",
+        mysteryDescription: "Ein weiteres Spiel wird später enthüllt.",
+        comingSoon: "DEMNÄCHST VERFÜGBAR",
+        project: "Projekt im Aufbau"
+    },
+
+    en: {
+        title: "Torn Raffle",
+        subtitle: "Games, raffles and prizes for the Torn community",
+        loginTitle: "Login with Torn",
+        loginDescription: "Enter your Torn API key to register.",
+        apiPlaceholder: "Torn API Key",
+        loginButton: "Login with Torn",
+        loginSuccess: "You are successfully logged in to Torn Raffle.",
+        registered: "Registered Players",
+        gamesPlayed: "Games Played",
+        paidOut: "Xanax Paid Out",
+        ourGames: "Our Games",
+        wheel: "Lucky Wheel",
+        wheelDescription: "Spin the wheel and try your luck!",
+        raffle: "Raffle",
+        raffleDescription: "Buy tickets and win great prizes.",
+        doubleDescription: "Double your winnings or lose everything.",
+        jackpot: "Community Jackpot",
+        jackpotDescription: "Play for a growing jackpot.",
+        daily: "Daily Reward",
+        dailyDescription: "Come back every day and claim a reward.",
+        mystery: "Mystery Game",
+        mysteryDescription: "Another game will be revealed later.",
+        comingSoon: "COMING SOON",
+        project: "Project under construction"
+    },
+
+    fr: {
+        title: "Torn Raffle",
+        subtitle: "Jeux, tirages et récompenses pour la communauté Torn",
+        loginTitle: "Connexion avec Torn",
+        loginDescription: "Entrez votre clé API Torn pour vous inscrire.",
+        apiPlaceholder: "Clé API Torn",
+        loginButton: "Connexion avec Torn",
+        loginSuccess: "Vous êtes connecté à Torn Raffle.",
+        registered: "Joueurs inscrits",
+        gamesPlayed: "Parties jouées",
+        paidOut: "Xanax distribués",
+        ourGames: "Nos jeux",
+        wheel: "Roue de la chance",
+        wheelDescription: "Faites tourner la roue et tentez votre chance !",
+        raffle: "Tirage",
+        raffleDescription: "Achetez des tickets et gagnez des prix.",
+        doubleDescription: "Doublez vos gains ou perdez tout.",
+        jackpot: "Jackpot communautaire",
+        jackpotDescription: "Jouez pour un jackpot grandissant.",
+        daily: "Récompense quotidienne",
+        dailyDescription: "Revenez chaque jour pour obtenir une récompense.",
+        mystery: "Jeu mystère",
+        mysteryDescription: "Un autre jeu sera révélé plus tard.",
+        comingSoon: "BIENTÔT DISPONIBLE",
+        project: "Projet en construction"
+    },
+
+    es: {
+        title: "Torn Raffle",
+        subtitle: "Juegos, rifas y premios para la comunidad de Torn",
+        loginTitle: "Iniciar sesión con Torn",
+        loginDescription: "Introduce tu API Key de Torn para registrarte.",
+        apiPlaceholder: "API Key de Torn",
+        loginButton: "Iniciar sesión con Torn",
+        loginSuccess: "Has iniciado sesión correctamente en Torn Raffle.",
+        registered: "Jugadores registrados",
+        gamesPlayed: "Partidas jugadas",
+        paidOut: "Xanax pagados",
+        ourGames: "Nuestros juegos",
+        wheel: "Ruleta de la suerte",
+        wheelDescription: "¡Gira la ruleta y prueba tu suerte!",
+        raffle: "Rifa",
+        raffleDescription: "Compra tickets y gana grandes premios.",
+        doubleDescription: "Duplica tus ganancias o piérdelo todo.",
+        jackpot: "Jackpot comunitario",
+        jackpotDescription: "Juega por un jackpot creciente.",
+        daily: "Recompensa diaria",
+        dailyDescription: "Vuelve cada día y consigue una recompensa.",
+        mystery: "Juego misterioso",
+        mysteryDescription: "Más adelante se revelará otro juego.",
+        comingSoon: "PRÓXIMAMENTE",
+        project: "Proyecto en construcción"
+    },
+
+    zh: {
+        title: "Torn Raffle",
+        subtitle: "为 Torn 社区提供游戏、抽奖和奖励",
+        loginTitle: "使用 Torn 登录",
+        loginDescription: "输入你的 Torn API 密钥进行注册。",
+        apiPlaceholder: "Torn API 密钥",
+        loginButton: "使用 Torn 登录",
+        loginSuccess: "你已成功登录 Torn Raffle。",
+        registered: "注册玩家",
+        gamesPlayed: "已进行游戏",
+        paidOut: "已发放 Xanax",
+        ourGames: "我们的游戏",
+        wheel: "幸运转盘",
+        wheelDescription: "转动转盘，试试你的运气！",
+        raffle: "抽奖",
+        raffleDescription: "购买抽奖券并赢取奖励。",
+        doubleDescription: "赢取双倍奖励，否则全部失去。",
+        jackpot: "社区大奖",
+        jackpotDescription: "参加不断增长的大奖池。",
+        daily: "每日奖励",
+        dailyDescription: "每天回来领取奖励。",
+        mystery: "神秘游戏",
+        mysteryDescription: "稍后将公布另一款游戏。",
+        comingSoon: "即将推出",
+        project: "项目建设中"
+    }
+
+};
+
+
+function changeLanguage() {
+
+    const language =
+        document.getElementById("language").value;
+
+    const texts =
+        translations[language];
+
+    document.documentElement.lang = language;
+
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+
+        const key = element.getAttribute("data-i18n");
+
+        if (texts[key]) {
+            element.textContent = texts[key];
+        }
+
+    });
+
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+
+        const key =
+            element.getAttribute("data-i18n-placeholder");
+
+        if (texts[key]) {
+            element.placeholder = texts[key];
+        }
+
+    });
+
+    localStorage.setItem("language", language);
+}
+
+
+const savedLanguage =
+    localStorage.getItem("language") || "de";
+
+document.getElementById("language").value =
+    savedLanguage;
+
+changeLanguage();
+
 
 async function login() {
 
@@ -362,43 +623,55 @@ async function login() {
         document.getElementById("message");
 
     if (!apiKey) {
+
         message.textContent =
-            "Bitte gib deinen Torn API-Key ein.";
+            translations[
+                document.getElementById("language").value
+            ].apiPlaceholder;
+
         return;
     }
 
-    message.textContent =
-        "API-Key wird geprüft...";
+    message.textContent = "...";
 
     try {
 
         const response = await fetch("/api/login", {
             method: "POST",
+
             headers: {
                 "Content-Type": "application/json"
             },
+
             body: JSON.stringify({
                 apiKey: apiKey
             })
         });
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
         if (!response.ok) {
+
             message.textContent =
                 data.error ||
-                "Der API-Key konnte nicht überprüft werden.";
+                "Login failed.";
+
             return;
         }
 
-        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("loginBox")
+            .style.display = "none";
 
-        document.getElementById("dashboard").style.display = "block";
+        document.getElementById("dashboard")
+            .style.display = "block";
 
-        document.getElementById("welcomeText").textContent =
+        document.getElementById("welcomeText")
+            .textContent =
             "Willkommen zurück, " + data.name + "!";
 
-        document.getElementById("playerId").textContent =
+        document.getElementById("playerId")
+            .textContent =
             "Torn ID: " + data.id;
 
     } catch (error) {
