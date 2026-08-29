@@ -42,6 +42,18 @@
             margin-bottom: 25px;
         }
 
+        input {
+            width: 90%;
+            max-width: 400px;
+            padding: 14px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #222;
+            color: white;
+            font-size: 16px;
+        }
+
         button {
             padding: 14px 30px;
             font-size: 18px;
@@ -54,6 +66,10 @@
 
         button:hover {
             opacity: 0.85;
+        }
+
+        #welcome {
+            display: none;
         }
 
         footer {
@@ -74,18 +90,45 @@
 
     <main>
 
-        <div class="box">
-            <h2>Willkommen bei Torn Raffle!</h2>
+        <div class="box" id="loginBox">
+            <h2>Bei Torn anmelden</h2>
+
             <p>
-                Hier entsteht eine Raffle-Plattform für die Torn-Community.
+                Gib deinen Torn API-Key ein, um dich zu registrieren.
             </p>
-            <button>Login mit Torn</button>
+
+            <input
+                type="password"
+                id="apiKey"
+                placeholder="Torn API-Key"
+            >
+
+            <br>
+
+            <button onclick="login()">
+                Bei Torn anmelden
+            </button>
+
+            <p id="message"></p>
+        </div>
+
+        <div class="box" id="welcome">
+            <h2 id="welcomeText"></h2>
+
+            <p>
+                Willkommen bei Torn Raffle!
+            </p>
+
+            <p>
+                Dein persönliches Raffle-Dashboard wird hier später angezeigt.
+            </p>
         </div>
 
         <div class="box">
             <h2>So funktioniert es</h2>
+
             <p>
-                Spieler können sich anmelden und an verschiedenen
+                Nach der Anmeldung kannst du an verschiedenen
                 Raffles teilnehmen.
             </p>
         </div>
@@ -95,6 +138,21 @@
     <footer>
         Torn Raffle – Projekt im Aufbau
     </footer>
+
+    <script>
+        function login() {
+            const apiKey = document.getElementById("apiKey").value;
+            const message = document.getElementById("message");
+
+            if (!apiKey) {
+                message.textContent = "Bitte gib deinen Torn API-Key ein.";
+                return;
+            }
+
+            message.textContent =
+                "Der API-Key wird als Nächstes sicher über den Server geprüft.";
+        }
+    </script>
 
 </body>
 </html>
