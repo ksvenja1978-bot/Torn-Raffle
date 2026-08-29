@@ -26,16 +26,14 @@
 
         .fox {
             font-size: 55px;
-            margin-bottom: 10px;
         }
 
         h1 {
-            margin: 0;
+            margin: 5px 0;
             font-size: 42px;
         }
 
         .subtitle {
-            margin-top: 10px;
             color: #aaa;
             font-size: 18px;
         }
@@ -46,17 +44,13 @@
             padding: 20px;
         }
 
-        .login-box {
+        .box {
             background: #191919;
+            border: 1px solid #333;
             border-radius: 14px;
             padding: 30px;
-            text-align: center;
             margin-bottom: 30px;
-            border: 1px solid #333;
-        }
-
-        .login-box h2 {
-            margin-top: 0;
+            text-align: center;
         }
 
         input {
@@ -110,11 +104,6 @@
             margin-top: 6px;
         }
 
-        h2.section-title {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
         .games {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -122,7 +111,6 @@
         }
 
         .game {
-            position: relative;
             background: #191919;
             border: 1px solid #333;
             border-radius: 14px;
@@ -131,21 +119,15 @@
             text-align: center;
         }
 
-        .game.available {
-            border-color: #7040ff;
-        }
-
         .game.disabled {
             opacity: 0.45;
         }
 
         .game-icon {
             font-size: 42px;
-            margin-bottom: 10px;
         }
 
         .game h3 {
-            margin: 8px 0;
             font-size: 24px;
         }
 
@@ -156,7 +138,6 @@
 
         .coming-soon {
             display: inline-block;
-            margin-top: 10px;
             padding: 6px 12px;
             border-radius: 20px;
             background: #333;
@@ -164,23 +145,30 @@
             font-size: 13px;
         }
 
-        .play-button {
-            margin-top: 10px;
+        #dashboard {
+            display: none;
+        }
+
+        #message {
+            min-height: 20px;
+            color: #bbb;
+        }
+
+        .player-id {
+            color: #999;
+            font-size: 14px;
         }
 
         footer {
             text-align: center;
-            padding: 35px 20px;
+            padding: 35px;
             color: #666;
             border-top: 1px solid #222;
             margin-top: 50px;
         }
 
         @media (max-width: 700px) {
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
+            .stats,
             .games {
                 grid-template-columns: 1fr;
             }
@@ -198,23 +186,27 @@
     <div class="fox">🦊</div>
     <h1>Torn Raffle</h1>
     <div class="subtitle">
-        Games, raffles and prizes for the Torn community
+        Games, Raffles and Prizes for the Torn community
     </div>
 </header>
 
 <main>
 
-    <section class="login-box">
+    <!-- LOGIN -->
+
+    <section class="box" id="loginBox">
+
         <h2>Bei Torn anmelden</h2>
 
         <p>
-            Melde dich mit deinem Torn API-Key an.
+            Gib deinen Torn API-Key ein, um dich zu registrieren.
         </p>
 
         <input
             type="password"
             id="apiKey"
             placeholder="Torn API-Key"
+            autocomplete="off"
         >
 
         <br>
@@ -224,8 +216,28 @@
         </button>
 
         <p id="message"></p>
+
     </section>
 
+
+    <!-- DASHBOARD -->
+
+    <section class="box" id="dashboard">
+
+        <h2 id="welcomeText">
+            Willkommen!
+        </h2>
+
+        <p class="player-id" id="playerId"></p>
+
+        <p>
+            Du bist erfolgreich bei Torn Raffle angemeldet.
+        </p>
+
+    </section>
+
+
+    <!-- STATUS -->
 
     <section class="stats">
 
@@ -247,124 +259,84 @@
     </section>
 
 
-    <h2 class="section-title">
+    <h2 style="text-align:center;">
         Unsere Spiele
     </h2>
 
 
+    <!-- SPIELE -->
+
     <section class="games">
 
-        <!-- Glücksrad -->
-
-        <div class="game available">
-
+        <div class="game">
             <div class="game-icon">🎡</div>
-
             <h3>Glücksrad</h3>
-
             <p>
                 Drehe das Rad und versuche dein Glück!
             </p>
-
-            <button class="play-button">
-                Demnächst spielbar
-            </button>
-
+            <span class="coming-soon">
+                DEMNÄCHST VERFÜGBAR
+            </span>
         </div>
 
 
-        <!-- Raffle -->
-
         <div class="game disabled">
-
             <div class="game-icon">🎟️</div>
-
             <h3>Raffle</h3>
-
             <p>
                 Kaufe Tickets und gewinne tolle Preise.
             </p>
-
             <span class="coming-soon">
                 DEMNÄCHST VERFÜGBAR
             </span>
-
         </div>
 
 
-        <!-- Double or Nothing -->
-
         <div class="game disabled">
-
             <div class="game-icon">⚔️</div>
-
             <h3>Double or Nothing</h3>
-
             <p>
                 Verdopple deinen Gewinn oder verliere alles.
             </p>
-
             <span class="coming-soon">
                 DEMNÄCHST VERFÜGBAR
             </span>
-
         </div>
 
 
-        <!-- Jackpot -->
-
         <div class="game disabled">
-
             <div class="game-icon">💰</div>
-
             <h3>Community Jackpot</h3>
-
             <p>
                 Spiele um einen wachsenden Jackpot.
             </p>
-
             <span class="coming-soon">
                 DEMNÄCHST VERFÜGBAR
             </span>
-
         </div>
 
 
-        <!-- Daily Reward -->
-
         <div class="game disabled">
-
             <div class="game-icon">🎁</div>
-
             <h3>Daily Reward</h3>
-
             <p>
                 Jeden Tag vorbeischauen und eine Belohnung sichern.
             </p>
-
             <span class="coming-soon">
                 DEMNÄCHST VERFÜGBAR
             </span>
-
         </div>
 
 
-        <!-- Mystery Game -->
-
         <div class="game disabled">
-
             <div class="game-icon">❓</div>
-
             <h3>Mystery Game</h3>
-
             <p>
-                Was sich dahinter verbirgt, wird später enthüllt.
+                Ein weiteres Spiel wird später enthüllt.
             </p>
-
             <span class="coming-soon">
                 DEMNÄCHST VERFÜGBAR
             </span>
-
         </div>
 
     </section>
@@ -383,15 +355,20 @@
 
 async function login() {
 
-    const apiKey = document.getElementById("apiKey").value.trim();
-    const message = document.getElementById("message");
+    const apiKey =
+        document.getElementById("apiKey").value.trim();
+
+    const message =
+        document.getElementById("message");
 
     if (!apiKey) {
-        message.textContent = "Bitte gib deinen Torn API-Key ein.";
+        message.textContent =
+            "Bitte gib deinen Torn API-Key ein.";
         return;
     }
 
-    message.textContent = "API-Key wird geprüft...";
+    message.textContent =
+        "API-Key wird geprüft...";
 
     try {
 
@@ -409,19 +386,20 @@ async function login() {
 
         if (!response.ok) {
             message.textContent =
-                data.error || "Der API-Key konnte nicht überprüft werden.";
+                data.error ||
+                "Der API-Key konnte nicht überprüft werden.";
             return;
         }
 
         document.getElementById("loginBox").style.display = "none";
 
-        const welcomeBox = document.getElementById("welcome");
-        const welcomeText = document.getElementById("welcomeText");
+        document.getElementById("dashboard").style.display = "block";
 
-        welcomeText.textContent =
+        document.getElementById("welcomeText").textContent =
             "Willkommen zurück, " + data.name + "!";
 
-        welcomeBox.style.display = "block";
+        document.getElementById("playerId").textContent =
+            "Torn ID: " + data.id;
 
     } catch (error) {
 
