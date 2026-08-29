@@ -20,7 +20,7 @@
 
         header {
             text-align: center;
-            padding: 30px 20px;
+            padding: 25px 20px 35px;
             background: #171717;
             border-bottom: 1px solid #333;
         }
@@ -38,6 +38,7 @@
             background: #222;
             color: white;
             border: 1px solid #444;
+            cursor: pointer;
         }
 
         .fox {
@@ -97,6 +98,16 @@
 
         #dashboard {
             display: none;
+        }
+
+        #message {
+            min-height: 20px;
+            color: #bbb;
+        }
+
+        .player-id {
+            color: #999;
+            font-size: 14px;
         }
 
         .stats {
@@ -174,7 +185,6 @@
         }
 
         @media (max-width: 700px) {
-
             .stats,
             .games {
                 grid-template-columns: 1fr;
@@ -192,13 +202,17 @@
 <header>
 
     <div class="topbar">
+
         <select id="language" onchange="changeLanguage()">
-            <option value="de">🇩🇪 Deutsch</option>
-            <option value="en">🇬🇧 English</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="zh">🇨🇳 中文</option>
+
+            <option value="de">🇩🇪</option>
+            <option value="en">🇬🇧</option>
+            <option value="fr">🇫🇷</option>
+            <option value="es">🇪🇸</option>
+            <option value="zh">🇨🇳</option>
+
         </select>
+
     </div>
 
     <div class="fox">🦊</div>
@@ -231,14 +245,17 @@
         <input
             type="password"
             id="apiKey"
+            autocomplete="off"
             data-i18n-placeholder="apiPlaceholder"
             placeholder="Torn API-Key"
-            autocomplete="off"
         >
 
         <br>
 
-        <button onclick="login()" data-i18n="loginButton">
+        <button
+            onclick="login()"
+            data-i18n="loginButton"
+        >
             Bei Torn anmelden
         </button>
 
@@ -251,11 +268,11 @@
 
     <section class="box" id="dashboard">
 
-        <h2 id="welcomeText" data-welcome>
-    Willkommen zurück!
-</h2>
+        <h2 id="welcomeText">
+            Willkommen zurück!
+        </h2>
 
-        <p id="playerId"></p>
+        <p class="player-id" id="playerId"></p>
 
         <p data-i18n="loginSuccess">
             Du bist erfolgreich bei Torn Raffle angemeldet.
@@ -269,30 +286,59 @@
     <section class="stats">
 
         <div class="stat">
-            <div class="stat-number">0</div>
-            <div class="stat-label" data-i18n="registered">
+
+            <div class="stat-number">
+                0
+            </div>
+
+            <div
+                class="stat-label"
+                data-i18n="registered"
+            >
                 Registrierte Spieler
             </div>
+
         </div>
 
+
         <div class="stat">
-            <div class="stat-number">0</div>
-            <div class="stat-label" data-i18n="gamesPlayed">
+
+            <div class="stat-number">
+                0
+            </div>
+
+            <div
+                class="stat-label"
+                data-i18n="gamesPlayed"
+            >
                 Spiele gespielt
             </div>
+
         </div>
 
+
         <div class="stat">
-            <div class="stat-number">0</div>
-            <div class="stat-label" data-i18n="paidOut">
+
+            <div class="stat-number">
+                0
+            </div>
+
+            <div
+                class="stat-label"
+                data-i18n="paidOut"
+            >
                 Xanax ausgezahlt
             </div>
+
         </div>
 
     </section>
 
 
-    <h2 style="text-align:center;" data-i18n="ourGames">
+    <h2
+        style="text-align:center;"
+        data-i18n="ourGames"
+    >
         Unsere Spiele
     </h2>
 
@@ -303,7 +349,9 @@
 
         <div class="game">
 
-            <div class="game-icon">🎡</div>
+            <div class="game-icon">
+                🎡
+            </div>
 
             <h3 data-i18n="wheel">
                 Glücksrad
@@ -313,7 +361,10 @@
                 Drehe das Rad und versuche dein Glück!
             </p>
 
-            <span class="coming-soon" data-i18n="comingSoon">
+            <span
+                class="coming-soon"
+                data-i18n="comingSoon"
+            >
                 DEMNÄCHST VERFÜGBAR
             </span>
 
@@ -322,7 +373,9 @@
 
         <div class="game disabled">
 
-            <div class="game-icon">🎟️</div>
+            <div class="game-icon">
+                🎟️
+            </div>
 
             <h3 data-i18n="raffle">
                 Raffle
@@ -332,7 +385,10 @@
                 Kaufe Tickets und gewinne tolle Preise.
             </p>
 
-            <span class="coming-soon" data-i18n="comingSoon">
+            <span
+                class="coming-soon"
+                data-i18n="comingSoon"
+            >
                 DEMNÄCHST VERFÜGBAR
             </span>
 
@@ -341,7 +397,9 @@
 
         <div class="game disabled">
 
-            <div class="game-icon">⚔️</div>
+            <div class="game-icon">
+                ⚔️
+            </div>
 
             <h3>
                 Double or Nothing
@@ -351,7 +409,10 @@
                 Verdopple deinen Gewinn oder verliere alles.
             </p>
 
-            <span class="coming-soon" data-i18n="comingSoon">
+            <span
+                class="coming-soon"
+                data-i18n="comingSoon"
+            >
                 DEMNÄCHST VERFÜGBAR
             </span>
 
@@ -360,7 +421,9 @@
 
         <div class="game disabled">
 
-            <div class="game-icon">💰</div>
+            <div class="game-icon">
+                💰
+            </div>
 
             <h3 data-i18n="jackpot">
                 Community Jackpot
@@ -370,7 +433,10 @@
                 Spiele um einen wachsenden Jackpot.
             </p>
 
-            <span class="coming-soon" data-i18n="comingSoon">
+            <span
+                class="coming-soon"
+                data-i18n="comingSoon"
+            >
                 DEMNÄCHST VERFÜGBAR
             </span>
 
@@ -379,7 +445,9 @@
 
         <div class="game disabled">
 
-            <div class="game-icon">🎁</div>
+            <div class="game-icon">
+                🎁
+            </div>
 
             <h3 data-i18n="daily">
                 Daily Reward
@@ -389,7 +457,10 @@
                 Jeden Tag vorbeischauen und eine Belohnung sichern.
             </p>
 
-            <span class="coming-soon" data-i18n="comingSoon">
+            <span
+                class="coming-soon"
+                data-i18n="comingSoon"
+            >
                 DEMNÄCHST VERFÜGBAR
             </span>
 
@@ -398,7 +469,9 @@
 
         <div class="game disabled">
 
-            <div class="game-icon">❓</div>
+            <div class="game-icon">
+                ❓
+            </div>
 
             <h3 data-i18n="mystery">
                 Mystery Game
@@ -408,7 +481,10 @@
                 Ein weiteres Spiel wird später enthüllt.
             </p>
 
-            <span class="coming-soon" data-i18n="comingSoon">
+            <span
+                class="coming-soon"
+                data-i18n="comingSoon"
+            >
                 DEMNÄCHST VERFÜGBAR
             </span>
 
@@ -420,13 +496,19 @@
 
 
 <footer>
-    Torn Raffle – <span data-i18n="project">
+
+    Torn Raffle –
+
+    <span data-i18n="project">
         Projekt im Aufbau
     </span>
+
     <br>
+
     <small>
         Powered by the Torn community
     </small>
+
 </footer>
 
 
@@ -458,7 +540,8 @@ const translations = {
         mystery: "Mystery Game",
         mysteryDescription: "Ein weiteres Spiel wird später enthüllt.",
         comingSoon: "DEMNÄCHST VERFÜGBAR",
-        project: "Projekt im Aufbau"
+        project: "Projekt im Aufbau",
+        welcome: "Willkommen zurück, "
     },
 
     en: {
@@ -485,7 +568,8 @@ const translations = {
         mystery: "Mystery Game",
         mysteryDescription: "Another game will be revealed later.",
         comingSoon: "COMING SOON",
-        project: "Project under construction"
+        project: "Project under construction",
+        welcome: "Welcome back, "
     },
 
     fr: {
@@ -512,7 +596,8 @@ const translations = {
         mystery: "Jeu mystère",
         mysteryDescription: "Un autre jeu sera révélé plus tard.",
         comingSoon: "BIENTÔT DISPONIBLE",
-        project: "Projet en construction"
+        project: "Projet en construction",
+        welcome: "Bienvenue, "
     },
 
     es: {
@@ -539,7 +624,8 @@ const translations = {
         mystery: "Juego misterioso",
         mysteryDescription: "Más adelante se revelará otro juego.",
         comingSoon: "PRÓXIMAMENTE",
-        project: "Proyecto en construcción"
+        project: "Proyecto en construcción",
+        welcome: "¡Bienvenido de nuevo, "
     },
 
     zh: {
@@ -566,10 +652,43 @@ const translations = {
         mystery: "神秘游戏",
         mysteryDescription: "稍后将公布另一款游戏。",
         comingSoon: "即将推出",
-        project: "项目建设中"
+        project: "项目建设中",
+        welcome: "欢迎回来，"
     }
 
 };
+
+
+window.loggedInPlayerName = "";
+
+
+function updateWelcomeText() {
+
+    const language =
+        document.getElementById("language").value;
+
+    const playerName =
+        window.loggedInPlayerName;
+
+    if (!playerName) {
+        return;
+    }
+
+    const text =
+        translations[language];
+
+    let welcome =
+        text.welcome + playerName;
+
+    if (language !== "zh") {
+        welcome += "!";
+    } else {
+        welcome += "！";
+    }
+
+    document.getElementById("welcomeText")
+        .textContent = welcome;
+}
 
 
 function changeLanguage() {
@@ -580,46 +699,54 @@ function changeLanguage() {
     const texts =
         translations[language];
 
-    document.documentElement.lang = language;
+    document.documentElement.lang =
+        language;
 
-    document.querySelectorAll("[data-i18n]").forEach(element => {
+    document.querySelectorAll("[data-i18n]")
+        .forEach(element => {
 
-        const key = element.getAttribute("data-i18n");
+            const key =
+                element.getAttribute("data-i18n");
 
-        if (texts[key]) {
-            element.textContent = texts[key];
-        }
+            if (texts[key]) {
+                element.textContent =
+                    texts[key];
+            }
 
-    });
+        });
 
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
 
-        const key =
-            element.getAttribute("data-i18n-placeholder");
+    document.querySelectorAll("[data-i18n-placeholder]")
+        .forEach(element => {
 
-        if (texts[key]) {
-            element.placeholder = texts[key];
-        }
+            const key =
+                element.getAttribute(
+                    "data-i18n-placeholder"
+                );
 
-    });
+            if (texts[key]) {
+                element.placeholder =
+                    texts[key];
+            }
 
-    localStorage.setItem("language", language);
+        });
+
+
+    localStorage.setItem(
+        "language",
+        language
+    );
+
+
+    updateWelcomeText();
 }
-
-
-const savedLanguage =
-    localStorage.getItem("language") || "de";
-
-document.getElementById("language").value =
-    savedLanguage;
-
-changeLanguage();
 
 
 async function login() {
 
     const apiKey =
-        document.getElementById("apiKey").value.trim();
+        document.getElementById("apiKey")
+            .value.trim();
 
     const message =
         document.getElementById("message");
@@ -634,24 +761,33 @@ async function login() {
         return;
     }
 
-    message.textContent = "...";
+
+    message.textContent =
+        "..." ;
+
 
     try {
 
-        const response = await fetch("/api/login", {
-            method: "POST",
+        const response =
+            await fetch("/api/login", {
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+                method: "POST",
 
-            body: JSON.stringify({
-                apiKey: apiKey
-            })
-        });
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    apiKey: apiKey
+                })
+
+            });
+
 
         const data =
             await response.json();
+
 
         if (!response.ok) {
 
@@ -662,38 +798,26 @@ async function login() {
             return;
         }
 
+
+        window.loggedInPlayerName =
+            data.name;
+
+
         document.getElementById("loginBox")
             .style.display = "none";
+
 
         document.getElementById("dashboard")
             .style.display = "block";
 
-        const language =
-    document.getElementById("language").value;
-
-const welcomeMessages = {
-    de: "Willkommen zurück, ",
-    en: "Welcome back, ",
-    fr: "Bienvenue, ",
-    es: "¡Bienvenido de nuevo, ",
-    zh: "欢迎回来，"
-};
-
-let welcome =
-    welcomeMessages[language] || welcomeMessages.de;
-
-if (language === "zh") {
-    welcome += data.name + "！";
-} else {
-    welcome += data.name + "!";
-}
-
-document.getElementById("welcomeText").textContent =
-    welcome;
 
         document.getElementById("playerId")
             .textContent =
             "Torn ID: " + data.id;
+
+
+        updateWelcomeText();
+
 
     } catch (error) {
 
@@ -703,6 +827,15 @@ document.getElementById("welcomeText").textContent =
     }
 
 }
+
+
+const savedLanguage =
+    localStorage.getItem("language") || "de";
+
+document.getElementById("language").value =
+    savedLanguage;
+
+changeLanguage();
 
 </script>
 
