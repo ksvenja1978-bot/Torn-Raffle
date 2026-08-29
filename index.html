@@ -6,45 +6,62 @@
     <title>Torn Raffle</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #111;
+            background: #0d0d0d;
             color: white;
-            text-align: center;
         }
 
         header {
-            padding: 40px 20px;
-            background: #1c1c1c;
+            text-align: center;
+            padding: 35px 20px;
+            background: #171717;
+            border-bottom: 1px solid #333;
+        }
+
+        .fox {
+            font-size: 55px;
+            margin-bottom: 10px;
         }
 
         h1 {
+            margin: 0;
             font-size: 42px;
-            margin: 0 0 10px;
         }
 
         .subtitle {
-            color: #bbb;
+            margin-top: 10px;
+            color: #aaa;
             font-size: 18px;
         }
 
         main {
-            max-width: 700px;
-            margin: 40px auto;
+            max-width: 1000px;
+            margin: 35px auto;
             padding: 20px;
         }
 
-        .box {
-            background: #1c1c1c;
+        .login-box {
+            background: #191919;
+            border-radius: 14px;
             padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+
+        .login-box h2 {
+            margin-top: 0;
         }
 
         input {
             width: 90%;
-            max-width: 400px;
+            max-width: 450px;
             padding: 14px;
             margin: 15px 0;
             border-radius: 8px;
@@ -55,104 +72,334 @@
         }
 
         button {
-            padding: 14px 30px;
-            font-size: 18px;
+            padding: 13px 28px;
             border: none;
             border-radius: 8px;
-            cursor: pointer;
-            background: #6c3cff;
+            background: #7040ff;
             color: white;
+            font-size: 16px;
+            cursor: pointer;
         }
 
         button:hover {
             opacity: 0.85;
         }
 
-        #welcome {
-            display: none;
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .stat {
+            background: #191919;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: #999;
+            margin-top: 6px;
+        }
+
+        h2.section-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .games {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .game {
+            position: relative;
+            background: #191919;
+            border: 1px solid #333;
+            border-radius: 14px;
+            padding: 25px;
+            min-height: 190px;
+            text-align: center;
+        }
+
+        .game.available {
+            border-color: #7040ff;
+        }
+
+        .game.disabled {
+            opacity: 0.45;
+        }
+
+        .game-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .game h3 {
+            margin: 8px 0;
+            font-size: 24px;
+        }
+
+        .game p {
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .coming-soon {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #333;
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .play-button {
+            margin-top: 10px;
         }
 
         footer {
+            text-align: center;
+            padding: 35px 20px;
+            color: #666;
+            border-top: 1px solid #222;
             margin-top: 50px;
-            padding: 20px;
-            color: #777;
-            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .games {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <h1>Torn Raffle</h1>
-        <div class="subtitle">Raffles and giveaways for Torn players</div>
-    </header>
+<header>
+    <div class="fox">🦊</div>
+    <h1>Torn Raffle</h1>
+    <div class="subtitle">
+        Games, raffles and prizes for the Torn community
+    </div>
+</header>
 
-    <main>
+<main>
 
-        <div class="box" id="loginBox">
-            <h2>Bei Torn anmelden</h2>
+    <section class="login-box">
+        <h2>Bei Torn anmelden</h2>
+
+        <p>
+            Melde dich mit deinem Torn API-Key an.
+        </p>
+
+        <input
+            type="password"
+            id="apiKey"
+            placeholder="Torn API-Key"
+        >
+
+        <br>
+
+        <button onclick="login()">
+            Bei Torn anmelden
+        </button>
+
+        <p id="message"></p>
+    </section>
+
+
+    <section class="stats">
+
+        <div class="stat">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Registrierte Spieler</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Spiele gespielt</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Xanax ausgezahlt</div>
+        </div>
+
+    </section>
+
+
+    <h2 class="section-title">
+        Unsere Spiele
+    </h2>
+
+
+    <section class="games">
+
+        <!-- Glücksrad -->
+
+        <div class="game available">
+
+            <div class="game-icon">🎡</div>
+
+            <h3>Glücksrad</h3>
 
             <p>
-                Gib deinen Torn API-Key ein, um dich zu registrieren.
+                Drehe das Rad und versuche dein Glück!
             </p>
 
-            <input
-                type="password"
-                id="apiKey"
-                placeholder="Torn API-Key"
-            >
-
-            <br>
-
-            <button onclick="login()">
-                Bei Torn anmelden
+            <button class="play-button">
+                Demnächst spielbar
             </button>
 
-            <p id="message"></p>
         </div>
 
-        <div class="box" id="welcome">
-            <h2 id="welcomeText"></h2>
+
+        <!-- Raffle -->
+
+        <div class="game disabled">
+
+            <div class="game-icon">🎟️</div>
+
+            <h3>Raffle</h3>
 
             <p>
-                Willkommen bei Torn Raffle!
+                Kaufe Tickets und gewinne tolle Preise.
             </p>
 
-            <p>
-                Dein persönliches Raffle-Dashboard wird hier später angezeigt.
-            </p>
+            <span class="coming-soon">
+                DEMNÄCHST VERFÜGBAR
+            </span>
+
         </div>
 
-        <div class="box">
-            <h2>So funktioniert es</h2>
+
+        <!-- Double or Nothing -->
+
+        <div class="game disabled">
+
+            <div class="game-icon">⚔️</div>
+
+            <h3>Double or Nothing</h3>
 
             <p>
-                Nach der Anmeldung kannst du an verschiedenen
-                Raffles teilnehmen.
+                Verdopple deinen Gewinn oder verliere alles.
             </p>
+
+            <span class="coming-soon">
+                DEMNÄCHST VERFÜGBAR
+            </span>
+
         </div>
 
-    </main>
 
-    <footer>
-        Torn Raffle – Projekt im Aufbau
-    </footer>
+        <!-- Jackpot -->
 
-    <script>
-        function login() {
-            const apiKey = document.getElementById("apiKey").value;
-            const message = document.getElementById("message");
+        <div class="game disabled">
 
-            if (!apiKey) {
-                message.textContent = "Bitte gib deinen Torn API-Key ein.";
-                return;
-            }
+            <div class="game-icon">💰</div>
 
-            message.textContent =
-                "Der API-Key wird als Nächstes sicher über den Server geprüft.";
-        }
-    </script>
+            <h3>Community Jackpot</h3>
+
+            <p>
+                Spiele um einen wachsenden Jackpot.
+            </p>
+
+            <span class="coming-soon">
+                DEMNÄCHST VERFÜGBAR
+            </span>
+
+        </div>
+
+
+        <!-- Daily Reward -->
+
+        <div class="game disabled">
+
+            <div class="game-icon">🎁</div>
+
+            <h3>Daily Reward</h3>
+
+            <p>
+                Jeden Tag vorbeischauen und eine Belohnung sichern.
+            </p>
+
+            <span class="coming-soon">
+                DEMNÄCHST VERFÜGBAR
+            </span>
+
+        </div>
+
+
+        <!-- Mystery Game -->
+
+        <div class="game disabled">
+
+            <div class="game-icon">❓</div>
+
+            <h3>Mystery Game</h3>
+
+            <p>
+                Was sich dahinter verbirgt, wird später enthüllt.
+            </p>
+
+            <span class="coming-soon">
+                DEMNÄCHST VERFÜGBAR
+            </span>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+    Torn Raffle – Projekt im Aufbau
+    <br>
+    <small>Powered by the Torn community</small>
+</footer>
+
+
+<script>
+
+function login() {
+
+    const apiKey = document.getElementById("apiKey").value;
+    const message = document.getElementById("message");
+
+    if (!apiKey) {
+
+        message.textContent =
+            "Bitte gib deinen Torn API-Key ein.";
+
+        return;
+    }
+
+    message.textContent =
+        "API-Key wird sicher geprüft...";
+
+}
+
+</script>
 
 </body>
 </html>
