@@ -381,21 +381,54 @@
 
 <script>
 
-function login() {
+async function login() {
 
-    const apiKey = document.getElementById("apiKey").value;
+    const apiKey = document.getElementById("apiKey").value.trim();
     const message = document.getElementById("message");
 
     if (!apiKey) {
-
-        message.textContent =
-            "Bitte gib deinen Torn API-Key ein.";
-
+        message.textContent = "Bitte gib deinen Torn API-Key ein.";
         return;
     }
 
-    message.textContent =
-        "API-Key wird sicher geprüft...";
+    message.textContent = "API-Key wird geprüft...";
+
+    try {
+
+        const response = await fetch("/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                apiKey: apiKey
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            message.textContent =
+                data.error || "Der API-Key konnte nicht überprüft werden.";
+            return;
+        }
+
+        document.getElementById("loginBox").style.display = "none";
+
+        const welcomeBox = document.getElementById("welcome");
+        const welcomeText = document.getElementById("welcomeText");
+
+        welcomeText.textContent =
+            "Willkommen zurück, " + data.name + "!";
+
+        welcomeBox.style.display = "block";
+
+    } catch (error) {
+
+        message.textContent =
+            "Verbindung zum Server fehlgeschlagen.";
+
+    }
 
 }
 
