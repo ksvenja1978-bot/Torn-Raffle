@@ -668,9 +668,28 @@ async function login() {
         document.getElementById("dashboard")
             .style.display = "block";
 
-        document.getElementById("welcomeText")
-            .textContent =
-            "Willkommen zurück, " + data.name + "!";
+        const language =
+    document.getElementById("language").value;
+
+const welcomeMessages = {
+    de: "Willkommen zurück, ",
+    en: "Welcome back, ",
+    fr: "Bienvenue, ",
+    es: "¡Bienvenido de nuevo, ",
+    zh: "欢迎回来，"
+};
+
+let welcome =
+    welcomeMessages[language] || welcomeMessages.de;
+
+if (language === "zh") {
+    welcome += data.name + "！";
+} else {
+    welcome += data.name + "!";
+}
+
+document.getElementById("welcomeText").textContent =
+    welcome;
 
         document.getElementById("playerId")
             .textContent =
