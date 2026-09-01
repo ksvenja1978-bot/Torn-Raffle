@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { neon } from "@neondatabase/serverless";
 
 const sql = neon(process.env.DATABASE_URL);
@@ -58,18 +59,83 @@ export default async function handler(req, res) {
                 last_login = NOW()
             RETURNING id, name, created_at, balance, games_played, games_won
         `;
+// Session erstellen
+const sessionId = crypto.randomBytes(32).toString("hex");
+
+await sql`
+    CREATE TABLE IF NOT EXISTS sessions (
+        session_id TEXT PRIMARY KEY,
+        player_id BIGINT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days'
+    )
+`;
+
+await sql`
+    DELETE FROM sessions
+    WHERE player_id = ${id}
+`;
+
+await sql`
+    INSERT INTO sessions (
+        session_id,
+        player_id
+    )
+    VALUES (
+        ${sessionId},
+        ${id}
+    )
+// Session erstellen
+const sessionId = crypto.randomBytes(32).toString("hex");
+
+await sql`
+    CREATE TABLE IF NOT EXISTS sessions (
+        session_id TEXT PRIMARY KEY,
+        player_id BIGINT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days'
+    )
+`;
+
+await sql`
+    DELETE FROM sessions
+    WHERE player_id = ${id}
+`;
+
+await sql`
+    INSERT INTO sessions (
+        session_id,
+        player_id
+    )
+    VALUES (
+        ${sessionId},
+        ${id}
+    )
+`;
+
+res.setHeader(
+    "Set-Cookie",
+    `torn_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
+);
+
+return res.status(200).json({
+    success: true,
+    id: Number(player.id),
+    name: player.name,
+    balance: Number(player.balance),
+    gamesPlayed: Number(player.games_played),
+    gamesWon: Number(player.games_won),
+    registeredAt: player.created_at
+});`;
+
+res.setHeader(
+    "Set-Cookie",
+    `torn_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
+);
+
 
         const player = result[0];
 
-        return res.status(200).json({
-            success: true,
-            id: Number(player.id),
-            name: player.name,
-            balance: Number(player.balance),
-            gamesPlayed: Number(player.games_played),
-            gamesWon: Number(player.games_won),
-            registeredAt: player.created_at
-        });
 
     } catch (error) {
         console.error("Login/registration error:", error);
