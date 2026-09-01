@@ -1,5 +1,5 @@
-import crypto from "crypto";
 import { neon } from "@neondatabase/serverless";
+import crypto from "crypto";
 
 const sql = neon(process.env.DATABASE_URL);
 
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         const id = Number(data.player_id);
         const name = String(data.name);
 
-        // Datenbank vorbereiten
+        // Spielertabelle anlegen
         await sql`
             CREATE TABLE IF NOT EXISTS players (
                 id BIGINT PRIMARY KEY,
@@ -49,8 +49,8 @@ export default async function handler(req, res) {
             )
         `;
 
-        // Spieler registrieren / aktualisieren
-        const result = await sql`
+        // Spieler registrieren oder bestehenden Spieler aktualisieren
+        const playerResult = await sql`
             INSERT INTO players (id, name)
             VALUES (${id}, ${name})
             ON CONFLICT (id)
@@ -59,86 +59,50 @@ export default async function handler(req, res) {
                 last_login = NOW()
             RETURNING id, name, created_at, balance, games_played, games_won
         `;
-// Session erstellen
-const sessionId = crypto.randomBytes(32).toString("hex");
 
-await sql`
-    CREATE TABLE IF NOT EXISTS sessions (
-        session_id TEXT PRIMARY KEY,
-        player_id BIGINT NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days'
-    )
-`;
+        const player = playerResult[0];
 
-await sql`
-    DELETE FROM sessions
-    WHERE player_id = ${id}
-`;
+        // Session-Tabelle anlegen
+        await sql`
+            CREATE TABLE IF NOT EXISTS sessions (
+                session_id TEXT PRIMARY KEY,
+                player_id BIGINT NOT NULL,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days'
+            )
+        `;
 
-await sql`
-    INSERT INTO sessions (
-        session_id,
-        player_id
-    )
-    VALUES (
-        ${sessionId},
-        ${id}
-    )
-// Session erstellen
-const sessionId = crypto.randomBytes(32).toString("hex");
+        // Alte Session des Spielers entfernen
+        await sql`
+            DELETE FROM sessions
+            WHERE player_id = ${id}
+        `;
 
-await sql`
-    CREATE TABLE IF NOT EXISTS sessions (
-        session_id TEXT PRIMARY KEY,
-        player_id BIGINT NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days'
-    )
-`;
+        // Neue Session erzeugen
+        const sessionId = crypto.randomBytes(32).toString("hex");
 
-await sql`
-    DELETE FROM sessions
-    WHERE player_id = ${id}
-`;
+        await sql`
+            INSERT INTO sessions (session_id, player_id)
+            VALUES (${sessionId}, ${id})
+        `;
 
-await sql`
-    INSERT INTO sessions (
-        session_id,
-        player_id
-    )
-    VALUES (
-        ${sessionId},
-        ${id}
-    )
-`;
+        // Session-Cookie setzen
+        res.setHeader(
+            "Set-Cookie",
+            `torn_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
+        );
 
-res.setHeader(
-    "Set-Cookie",
-    `torn_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
-);
-
-return res.status(200).json({
-    success: true,
-    id: Number(player.id),
-    name: player.name,
-    balance: Number(player.balance),
-    gamesPlayed: Number(player.games_played),
-    gamesWon: Number(player.games_won),
-    registeredAt: player.created_at
-});`;
-
-res.setHeader(
-    "Set-Cookie",
-    `torn_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
-);
-
-
-        const player = result[0];
-
+        return res.status(200).json({
+            success: true,
+            id: Number(player.id),
+            name: player.name,
+            balance: Number(player.balance),
+            gamesPlayed: Number(player.games_played),
+            gamesWon: Number(player.games_won)
+        });
 
     } catch (error) {
-        console.error("Login/registration error:", error);
+        console.error("Login error:", error);
 
         return res.status(500).json({
             error: "Serverfehler bei Login und Registrierung."
