@@ -1,3 +1,7 @@
+import { neon } from "@neondatabase/serverless";
+
+const sql = neon(process.env.DATABASE_URL);
+
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({
@@ -14,6 +18,7 @@ export default async function handler(req, res) {
             });
         }
 
+        // Torn API prüfen
         const response = await fetch(
             "https://api.torn.com/user/?selections=profile&key=" +
             encodeURIComponent(apiKey)
@@ -27,22 +32,50 @@ export default async function handler(req, res) {
             });
         }
 
-        // Spieler erfolgreich bei Torn gefunden
-        const player = {
-            id: Number(data.player_id),
-            name: String(data.name)
-        };
+        const id = Number(data.player_id);
+        const name = String(data.name);
+
+        // Datenbank vorbereiten
+        await sql`
+            CREATE TABLE IF NOT EXISTS players (
+                id BIGINT PRIMARY KEY,
+                name TEXT NOT NULL,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                last_login TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                balance BIGINT NOT NULL DEFAULT 0,
+                games_played BIGINT NOT NULL DEFAULT 0,
+                games_won BIGINT NOT NULL DEFAULT 0
+            )
+        `;
+
+        // Spieler registrieren / aktualisieren
+        const result = await sql`
+            INSERT INTO players (id, name)
+            VALUES (${id}, ${name})
+            ON CONFLICT (id)
+            DO UPDATE SET
+                name = EXCLUDED.name,
+                last_login = NOW()
+            RETURNING id, name, created_at, balance, games_played, games_won
+        `;
+
+        const player = result[0];
 
         return res.status(200).json({
             success: true,
-            player
+            id: Number(player.id),
+            name: player.name,
+            balance: Number(player.balance),
+            gamesPlayed: Number(player.games_played),
+            gamesWon: Number(player.games_won),
+            registeredAt: player.created_at
         });
 
     } catch (error) {
-        console.error("Login error:", error);
+        console.error("Login/registration error:", error);
 
         return res.status(500).json({
-            error: "Fehler bei der Verbindung zur Torn API."
+            error: "Serverfehler bei Login und Registrierung."
         });
     }
 }
