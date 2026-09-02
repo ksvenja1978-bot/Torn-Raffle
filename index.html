@@ -198,30 +198,28 @@
 
         .wheel-container {
             position: relative;
-            width: 340px;
-            height: 340px;
+            width: 360px;
+            height: 360px;
             margin: 30px auto;
         }
 
         #wheel {
-            width: 320px;
-            height: 320px;
+            width: 340px;
+            height: 340px;
             margin: 10px auto;
             border-radius: 50%;
             border: 10px solid #333;
             position: relative;
             overflow: hidden;
 
-            background: conic-gradient(
-                #7040ff 0deg 45deg,
-                #222 45deg 90deg,
-                #7040ff 90deg 135deg,
-                #222 135deg 180deg,
-                #7040ff 180deg 225deg,
-                #222 225deg 270deg,
-                #7040ff 270deg 315deg,
-                #222 315deg 360deg
-            );
+            background:
+                conic-gradient(
+                    #7040ff 0deg 198deg,
+                    #222 198deg 324deg,
+                    #7040ff 324deg 349.2deg,
+                    #222 349.2deg 358.2deg,
+                    #7040ff 358.2deg 360deg
+                );
 
             transition:
                 transform 4s cubic-bezier(.15,.8,.2,1);
@@ -277,6 +275,48 @@
             color: #999;
             font-size: 14px;
             margin-top: 15px;
+        }
+
+        .wheel-rules {
+            max-width: 500px;
+            margin: 25px auto;
+            padding: 20px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .wheel-rules h3 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .wheel-rules table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .wheel-rules td {
+            padding: 8px;
+            border-bottom: 1px solid #292929;
+        }
+
+        .wheel-rules td:last-child {
+            text-align: right;
+            color: #aaa;
+        }
+
+        .house-edge {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .house-edge strong {
+            color: white;
         }
 
         footer {
@@ -672,6 +712,58 @@
         >
             🎡 Drehen
         </button>
+
+
+        <!-- GEWINNCHANCEN -->
+
+        <div class="wheel-rules">
+
+            <h3>
+                Gewinnchancen
+            </h3>
+
+            <table>
+
+                <tr>
+                    <td>❌ Kein Gewinn</td>
+                    <td>55 %</td>
+                </tr>
+
+                <tr>
+                    <td>🟢 1 Xanax</td>
+                    <td>35 %</td>
+                </tr>
+
+                <tr>
+                    <td>🟢 2 Xanax</td>
+                    <td>7 %</td>
+                </tr>
+
+                <tr>
+                    <td>🟡 5 Xanax</td>
+                    <td>2,5 %</td>
+                </tr>
+
+                <tr>
+                    <td>🔴 10 Xanax</td>
+                    <td>0,5 %</td>
+                </tr>
+
+            </table>
+
+            <div class="house-edge">
+
+                RTP:
+                <strong>90 %</strong>
+
+                &nbsp;|&nbsp;
+
+                Hausvorteil:
+                <strong>10 %</strong>
+
+            </div>
+
+        </div>
 
 
         <p class="wheel-info">
@@ -1153,34 +1245,104 @@ let spinning = false;
 
 
 /*
-   Test-Gewinne.
+    10 % HAUSVORTEIL
+    90 % RTP
 
-   Diese Werte werden später NICHT mehr
-   im Browser entschieden.
+    Einsatz: 1 Xanax
 
-   Später entscheidet unser Server
-   das Ergebnis sicher.
+    Kein Gewinn = 0 Xanax
+    1 Xanax     = 1 Xanax
+    2 Xanax     = 2 Xanax
+    5 Xanax     = 5 Xanax
+    10 Xanax    = 10 Xanax
+
+    Erwartete Auszahlung:
+
+    0 × 55 %
+    + 1 × 35 %
+    + 2 × 7 %
+    + 5 × 2,5 %
+    + 10 × 0,5 %
+
+    = 0,90 Xanax
+
+    RTP = 90 %
+    Hausvorteil = 10 %
+
+    WICHTIG:
+    Diese Berechnung ist aktuell nur Testmodus.
+    Die echte Ziehung muss später auf dem Server
+    durchgeführt werden.
 */
 
-const wheelPrizes = [
 
-    "Kein Gewinn",
+const wheelOutcomes = [
 
-    "1 Xanax",
+    {
+        name: "Kein Gewinn",
+        prize: 0,
+        probability: 55
+    },
 
-    "2 Xanax",
+    {
+        name: "1 Xanax",
+        prize: 1,
+        probability: 35
+    },
 
-    "Kein Gewinn",
+    {
+        name: "2 Xanax",
+        prize: 2,
+        probability: 7
+    },
 
-    "5 Xanax",
+    {
+        name: "5 Xanax",
+        prize: 5,
+        probability: 2.5
+    },
 
-    "1 Xanax",
-
-    "10 Xanax",
-
-    "Kein Gewinn"
+    {
+        name: "10 Xanax",
+        prize: 10,
+        probability: 0.5
+    }
 
 ];
+
+
+/*
+    Ermittelt ein Ergebnis anhand
+    der tatsächlichen Wahrscheinlichkeiten.
+*/
+
+function getWheelOutcome() {
+
+    const random =
+        Math.random() * 100;
+
+    let current =
+        0;
+
+
+    for (const outcome of wheelOutcomes) {
+
+        current +=
+            outcome.probability;
+
+
+        if (random < current) {
+
+            return outcome;
+
+        }
+
+    }
+
+
+    return wheelOutcomes[0];
+
+}
 
 
 function openWheel() {
@@ -1238,18 +1400,17 @@ function spinWheel() {
 
 
     /*
-       Zufälliges Test-Ergebnis
+        Ergebnis anhand der echten
+        Test-Wahrscheinlichkeiten.
     */
 
-    const winningIndex =
-        Math.floor(
-            Math.random() *
-            wheelPrizes.length
-        );
+    const outcome =
+        getWheelOutcome();
 
 
     /*
-       Zusätzliche Umdrehungen
+        Das Rad dreht sich zunächst
+        zufällig oft.
     */
 
     const extraRotations =
@@ -1259,15 +1420,19 @@ function spinWheel() {
         );
 
 
-    const segmentSize =
-        360 /
-        wheelPrizes.length;
+    /*
+        Für die Animation verwenden wir
+        eine zufällige Position auf dem Rad.
 
+        Die Animation ist nur visuell.
+        Das tatsächliche Ergebnis wurde
+        bereits oben bestimmt.
+    */
 
     const targetAngle =
-        360 -
-        (winningIndex * segmentSize) -
-        (segmentSize / 2);
+        Math.floor(
+            Math.random() * 360
+        );
 
 
     wheelRotation +=
@@ -1283,9 +1448,18 @@ function spinWheel() {
 
     setTimeout(() => {
 
-        result.textContent =
-            "🎉 Ergebnis: " +
-            wheelPrizes[winningIndex];
+        if (outcome.prize === 0) {
+
+            result.textContent =
+                "❌ Kein Gewinn";
+
+        } else {
+
+            result.textContent =
+                "🎉 Gewinn: " +
+                outcome.name;
+
+        }
 
 
         button.disabled = false;
