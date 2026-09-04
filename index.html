@@ -3,1581 +3,411 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Torn Raffle</title>
-
+  <title>Torn Raffle - Ultimate Spin</title>
   <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --accent-color: #238636;
+      --accent-hover: #2ea043;
+      --text-color: #c9d1d9;
+      --text-bright: #ffffff;
+      --border-color: #30363d;
+      --wheel-border: #8b949e;
+    }
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #0d0d0f;
-      color: #fff;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     header {
-      text-align: center;
-      padding: 40px 20px 25px;
-      background: #111116;
-      border-bottom: 1px solid #29292f;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 42px;
-    }
-
-    header p {
-      color: #999;
-      margin-top: 10px;
-    }
-
-    .language-box {
-      margin-top: 20px;
-    }
-
-    select {
-      background: #222;
-      color: #fff;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 9px 14px;
-      font-size: 14px;
-    }
-
-    main {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 30px 20px;
-    }
-
-    .box {
-      background: #151518;
-      border: 1px solid #29292f;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.2);
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    .muted {
-      color: #999;
-    }
-
-    input {
       width: 100%;
-      max-width: 500px;
-      padding: 13px;
-      margin: 10px 0;
-      background: #0d0d0f;
-      border: 1px solid #444;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 15px;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 30px;
     }
 
-    button {
-      border: none;
-      border-radius: 8px;
-      padding: 12px 20px;
-      background: #7040ff;
-      color: #fff;
-      font-size: 15px;
+    h1 {
+      color: var(--text-bright);
+      font-size: 1.8rem;
+    }
+
+    .lang-switch button {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: .2s;
+      margin-left: 5px;
     }
 
-    button:hover {
-      background: #865eff;
+    .lang-switch button.active {
+      border-color: var(--accent-color);
+      color: var(--text-bright);
+      font-weight: bold;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    /* Auth Section */
+    .auth-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"], input[type="password"] {
+      flex: 1;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-bright);
+      padding: 10px 14px;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent-color);
+    }
+
+    button.btn-primary {
+      background: var(--accent-color);
+      color: var(--text-bright);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button.btn-primary:hover {
+      background: var(--accent-hover);
     }
 
     button:disabled {
-      opacity: .5;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .error {
-      color: #ff6666;
-      margin-top: 10px;
-    }
-
-    .success {
-      color: #69d98a;
-      margin-top: 10px;
-    }
-
-    #dashboard {
-      display: none;
-    }
-
-    .welcome {
-      font-size: 20px;
-      margin-bottom: 20px;
-    }
-
-    .stats {
+    /* Dashboard Stats */
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
-      margin-top: 20px;
     }
 
-    .stat {
-      background: #111116;
-      border: 1px solid #29292f;
-      border-radius: 10px;
-      padding: 18px;
+    .stat-card {
+      background: var(--bg-color);
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
       text-align: center;
     }
 
-    .stat-number {
-      font-size: 28px;
+    .stat-value {
+      font-size: 1.5rem;
       font-weight: bold;
-      color: #fff;
-    }
-
-    .stat-label {
-      color: #888;
+      color: var(--text-bright);
       margin-top: 5px;
-      font-size: 13px;
     }
 
-    .games {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 15px;
-    }
-
-    .game {
-      background: #111116;
-      border: 1px solid #29292f;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      transition: .2s;
-    }
-
-    .game:not(.disabled):hover {
-      transform: translateY(-3px);
-      border-color: #7040ff;
-    }
-
-    .game-icon {
-      font-size: 40px;
-      margin-bottom: 10px;
-    }
-
-    .game h3 {
-      margin: 8px 0;
-    }
-
-    .game p {
-      color: #888;
-      font-size: 14px;
-    }
-
-    .game.disabled {
-      opacity: .4;
-    }
-
-    .game button {
-      margin-top: 10px;
-    }
-
-    /* =========================
-       GLÜCKSRAD
-       ========================= */
-
-    #wheelSection {
-      display: none;
-    }
-
+    /* Wheel Section */
     .wheel-container {
-      position: relative;
-      width: 360px;
-      height: 360px;
-      margin: 30px auto;
-    }
-
-    #wheel {
-      width: 340px;
-      height: 340px;
-      margin: 10px auto;
-      border-radius: 50%;
-      border: 10px solid #333;
-      position: relative;
-      overflow: hidden;
-
-      /*
-        Testgrafik.
-        Die echte Aufteilung wird später mit dem echten Einsatz
-        und der serverseitigen Gewinnermittlung angepasst.
-      */
-      background:
-        conic-gradient(
-          #7040ff 0deg 198deg,
-          #222 198deg 324deg,
-          #7040ff 324deg 349.2deg,
-          #222 349.2deg 358.2deg,
-          #7040ff 358.2deg 360deg
-        );
-
-      transition: transform 4s cubic-bezier(.15,.8,.2,1);
-      box-shadow: 0 0 30px rgba(112,64,255,.25);
-    }
-
-    .wheel-center {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: #111;
-      border: 5px solid #444;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-size: 35px;
-      z-index: 3;
-    }
-
-    .wheel-pointer {
-      position: absolute;
-      top: -2px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 5;
-      font-size: 35px;
-      color: #fff;
-      text-shadow: 0 2px 5px #000;
-    }
-
-    #wheelResult {
-      min-height: 30px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
+      position: relative;
       margin: 20px 0;
     }
 
-    #spinButton {
-      display: block;
-      margin: 0 auto;
-      font-size: 17px;
-      padding: 14px 30px;
+    .pointer {
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 25px solid #ff4757;
+      position: absolute;
+      top: -10px;
+      z-index: 10;
     }
 
-    .wheel-info {
-      text-align: center;
-      color: #777;
-      font-size: 13px;
+    .wheel {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 5px solid var(--wheel-border);
+      /* Visualisierung der Wahrscheinlichkeiten: 0 (55%), 1 (35%), 2 (7%), 5 (2.5%), 10 (0.5%) */
+      background: conic-gradient(
+        #2f3542 0deg 198deg,     /* 0 Xanax - 55% */
+        #1e90ff 198deg 324deg,  /* 1 Xanax - 35% */
+        #2ed573 324deg 349.2deg, /* 2 Xanax - 7% */
+        #ffa502 349.2deg 358.2deg, /* 5 Xanax - 2.5% */
+        #ff4757 358.2deg 360deg /* 10 Xanax - 0.5% */
+      );
+      transition: transform 4s cubic-bezier(0.15, 0.90, 0.20, 1.00);
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .wheel-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
       margin-top: 20px;
     }
 
-    /* =========================
-       GEWINNCHANCEN
-       ========================= */
-
-    .wheel-rules {
-      max-width: 500px;
-      margin: 25px auto 0;
-      padding: 0;
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 10px;
-      text-align: left;
-      overflow: hidden;
-    }
-
-    .wheel-rules summary {
-      cursor: pointer;
-      padding: 15px 18px;
+    .result-message {
+      font-size: 1.2rem;
       font-weight: bold;
-      color: #fff;
-      list-style: none;
-      user-select: none;
+      min-height: 28px;
+      color: var(--text-bright);
     }
 
-    .wheel-rules summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .wheel-rules summary::after {
-      content: "▼";
-      float: right;
-      color: #888;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .wheel-rules[open] summary::after {
-      content: "▲";
-    }
-
-    .wheel-rules summary:hover {
-      background: #18181d;
-    }
-
-    .wheel-rules-content {
-      padding: 0 18px 18px;
-    }
-
-    .wheel-rules table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .wheel-rules td {
-      padding: 8px 0;
-      border-bottom: 1px solid #292929;
-    }
-
-    .wheel-rules td:last-child {
-      text-align: right;
-      color: #aaa;
-    }
-
-    .house-edge {
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid #333;
-      text-align: center;
-      color: #777;
-      font-size: 12px;
-    }
-
-    .house-edge strong {
-      color: #aaa;
-      font-weight: normal;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px 20px;
-      color: #666;
-      border-top: 1px solid #222;
-      margin-top: 30px;
-    }
-
-    @media (max-width: 500px) {
-      header h1 {
-        font-size: 32px;
-      }
-
-      .wheel-container {
-        width: 300px;
-        height: 300px;
-      }
-
-      #wheel {
-        width: 280px;
-        height: 280px;
-      }
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <h1>🦊 Torn Raffle</h1>
-  <p id="subtitle">Willkommen bei Torn Raffle!</p>
+  <header>
+    <h1>Torn Raffle</h1>
+    <div class="lang-switch">
+      <button id="lang-de" class="active" onclick="setLanguage('de')">DE</button>
+      <button id="lang-en" onclick="setLanguage('en')">EN</button>
+    </div>
+  </header>
 
-  <div class="language-box">
-    <select id="languageSelect" onchange="changeLanguage(this.value)">
-      <option value="de">🇩🇪 Deutsch</option>
-      <option value="en">🇬🇧 English</option>
-      <option value="fr">🇫🇷 Français</option>
-      <option value="es">🇪🇸 Español</option>
-      <option value="zh">🇨🇳 中文</option>
-    </select>
+  <div class="container">
+    
+    <!-- Login Card -->
+    <div id="authCard" class="card">
+      <h2 style="margin-bottom: 15px;" id="lbl-login-title">Anmelden</h2>
+      <div class="auth-box">
+        <input type="password" id="apiKey" placeholder="Torn API Key eingeben..." />
+        <button class="btn-primary" id="btnLogin" onclick="login()">Login</button>
+      </div>
+    </div>
+
+    <!-- App Area (nach Login sichtbar) -->
+    <div id="appArea" class="hidden">
+      
+      <!-- Stats Dashboard -->
+      <div class="card">
+        <h2 style="margin-bottom: 15px;" id="lbl-stats-title">Statistiken</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div id="lbl-stat-players">Spieler</div>
+            <div class="stat-value" id="val-players">1,248</div>
+          </div>
+          <div class="stat-card">
+            <div id="lbl-stat-games">Gespielte Runden</div>
+            <div class="stat-value" id="val-games">18,592</div>
+          </div>
+          <div class="stat-card">
+            <div id="lbl-stat-xanax">Ausgezahlte Xanax</div>
+            <div class="stat-value" id="val-xanax">9,410</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Glücksrad -->
+      <div class="card">
+        <h2 style="text-align: center;" id="lbl-wheel-title">Xanax Glücksrad</h2>
+        <div class="wheel-container">
+          <div class="pointer"></div>
+          <div class="wheel" id="wheel"></div>
+        </div>
+        <div class="wheel-controls">
+          <button class="btn-primary" id="spinButton" style="font-size: 1.1rem; padding: 12px 30px;" onclick="spinWheel()">Drehen!</button>
+          <div class="result-message" id="wheelResult"></div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
-</header>
 
-<main>
-
-  <!-- =========================
-       LOGIN
-       ========================= -->
-
-  <section id="loginSection" class="box">
-    <h2 id="loginTitle">🔐 Anmeldung</h2>
-
-    <p id="loginDescription" class="muted">
-      Melde dich mit deinem Torn API Key an.
-    </p>
-
-    <input
-      type="password"
-      id="apiKey"
-      placeholder="Torn API Key"
-      autocomplete="off"
-    >
-
-    <br>
-
-    <button onclick="login()" id="loginButton">
-      Anmelden
-    </button>
-
-    <div id="loginMessage"></div>
-  </section>
-
-
-  <!-- =========================
-       DASHBOARD
-       ========================= -->
-
-  <section id="dashboard" class="box">
-
-    <div class="welcome">
-      <span id="welcomeText">Willkommen zurück!</span>
-    </div>
-
-    <p class="muted">
-      <span id="tornIdLabel">Torn ID:</span>
-      <strong id="playerId">-</strong>
-    </p>
-
-    <div class="stats">
-
-      <div class="stat">
-        <div class="stat-number" id="registeredPlayers">0</div>
-        <div class="stat-label" id="registeredPlayersLabel">
-          Registrierte Spieler
-        </div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-number" id="gamesPlayed">0</div>
-        <div class="stat-label" id="gamesPlayedLabel">
-          Spiele gespielt
-        </div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-number" id="xanaxPaid">0</div>
-        <div class="stat-label" id="xanaxPaidLabel">
-          Xanax ausgezahlt
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- =========================
-       SPIELE
-       ========================= -->
-
-  <section class="box">
-
-    <h2 id="gamesTitle">🎮 Spiele</h2>
-
-    <div class="games">
-
-      <div class="game" onclick="openWheel()">
-        <div class="game-icon">🎡</div>
-
-        <h3 id="wheelGameTitle">
-          Glücksrad
-        </h3>
-
-        <p id="wheelGameDescription">
-          Drehe das Rad und versuche dein Glück!
-        </p>
-
-        <button id="wheelGameButton">
-          Spielen
-        </button>
-      </div>
-
-
-      <div class="game disabled">
-
-        <div class="game-icon">🎟️</div>
-
-        <h3 id="raffleTitle">
-          Verlosung
-        </h3>
-
-        <p id="raffleDescription">
-          Große Gewinne in regelmäßigen Verlosungen.
-        </p>
-
-        <button disabled id="comingSoon1">
-          Bald verfügbar
-        </button>
-
-      </div>
-
-
-      <div class="game disabled">
-
-        <div class="game-icon">💰</div>
-
-        <h3 id="doubleTitle">
-          Double or Nothing
-        </h3>
-
-        <p id="doubleDescription">
-          Verdopple deinen Gewinn oder verliere alles.
-        </p>
-
-        <button disabled id="comingSoon2">
-          Bald verfügbar
-        </button>
-
-      </div>
-
-
-      <div class="game disabled">
-
-        <div class="game-icon">🏆</div>
-
-        <h3 id="jackpotTitle">
-          Community Jackpot
-        </h3>
-
-        <p id="jackpotDescription">
-          Gemeinsam spielen, gemeinsam gewinnen.
-        </p>
-
-        <button disabled id="comingSoon3">
-          Bald verfügbar
-        </button>
-
-      </div>
-
-
-      <div class="game disabled">
-
-        <div class="game-icon">🎁</div>
-
-        <h3 id="dailyTitle">
-          Daily Reward
-        </h3>
-
-        <p id="dailyDescription">
-          Jeden Tag eine neue Chance.
-        </p>
-
-        <button disabled id="comingSoon4">
-          Bald verfügbar
-        </button>
-
-      </div>
-
-
-      <div class="game disabled">
-
-        <div class="game-icon">❓</div>
-
-        <h3 id="mysteryTitle">
-          Mystery Game
-        </h3>
-
-        <p id="mysteryDescription">
-          Was wird wohl hinter dem nächsten Spiel stecken?
-        </p>
-
-        <button disabled id="comingSoon5">
-          Bald verfügbar
-        </button>
-
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- =========================
-       GLÜCKSRAD
-       ========================= -->
-
-  <section id="wheelSection" class="box">
-
-    <h2 id="wheelTitle">
-      🎡 Glücksrad
-    </h2>
-
-    <p id="wheelDescription" class="muted">
-      Drehe das Rad und versuche dein Glück!
-    </p>
-
-
-    <div class="wheel-container">
-
-      <div class="wheel-pointer">▼</div>
-
-      <div id="wheel">
-        <div class="wheel-center">
-          🎡
-        </div>
-      </div>
-
-    </div>
-
-
-    <p id="wheelResult"></p>
-
-
-    <button
-      id="spinButton"
-      onclick="spinWheel()"
-    >
-      🎡 Drehen
-    </button>
-
-
-    <!-- GEWINNCHANCEN AUFKLAPPBAR -->
-
-    <details class="wheel-rules">
-
-      <summary id="oddsSummary">
-        🎯 Gewinnchancen anzeigen
-      </summary>
-
-      <div class="wheel-rules-content">
-
-        <table>
-
-          <tr>
-            <td id="noWinText">
-              ❌ Kein Gewinn
-            </td>
-            <td>55 %</td>
-          </tr>
-
-          <tr>
-            <td id="oneXanaxText">
-              🟢 1 Xanax
-            </td>
-            <td>35 %</td>
-          </tr>
-
-          <tr>
-            <td id="twoXanaxText">
-              🟢 2 Xanax
-            </td>
-            <td>7 %</td>
-          </tr>
-
-          <tr>
-            <td id="fiveXanaxText">
-              🟡 5 Xanax
-            </td>
-            <td>2,5 %</td>
-          </tr>
-
-          <tr>
-            <td id="tenXanaxText">
-              🔴 10 Xanax
-            </td>
-            <td>0,5 %</td>
-          </tr>
-
-        </table>
-
-
-        <div class="house-edge">
-
-          <span id="rtpText">
-            RTP:
-          </span>
-
-          <strong>90 %</strong>
-
-          &nbsp;|&nbsp;
-
-          <span id="houseEdgeText">
-            Hausvorteil:
-          </span>
-
-          <strong>10 %</strong>
-
-        </div>
-
-      </div>
-
-    </details>
-
-
-    <p class="wheel-info" id="testModeText">
-      Testmodus – noch kein echter Einsatz.
-    </p>
-
-
-    <br>
-
-    <button
-      onclick="closeWheel()"
-      style="background:#333;"
-      id="backButton"
-    >
-      ← Zurück
-    </button>
-
-  </section>
-
-</main>
-
-
-<footer>
-  <span id="footerText">
-    Torn Raffle – Community Games für Torn
-  </span>
-</footer>
-
-
-<script>
-
-  /* =========================================================
-     ÜBERSETZUNGEN
-     ========================================================= */
-
-  const translations = {
-
-    de: {
-
-      subtitle: "Willkommen bei Torn Raffle!",
-
-      loginTitle: "🔐 Anmeldung",
-      loginDescription: "Melde dich mit deinem Torn API Key an.",
-      apiPlaceholder: "Torn API Key",
-      loginButton: "Anmelden",
-
-      tornIdLabel: "Torn ID:",
-
-      registeredPlayersLabel: "Registrierte Spieler",
-      gamesPlayedLabel: "Spiele gespielt",
-      xanaxPaidLabel: "Xanax ausgezahlt",
-
-      gamesTitle: "🎮 Spiele",
-
-      wheelGameTitle: "Glücksrad",
-      wheelGameDescription: "Drehe das Rad und versuche dein Glück!",
-      wheelGameButton: "Spielen",
-
-      raffleTitle: "Verlosung",
-      raffleDescription: "Große Gewinne in regelmäßigen Verlosungen.",
-
-      doubleTitle: "Double or Nothing",
-      doubleDescription: "Verdopple deinen Gewinn oder verliere alles.",
-
-      jackpotTitle: "Community Jackpot",
-      jackpotDescription: "Gemeinsam spielen, gemeinsam gewinnen.",
-
-      dailyTitle: "Daily Reward",
-      dailyDescription: "Jeden Tag eine neue Chance.",
-
-      mysteryTitle: "Mystery Game",
-      mysteryDescription: "Was wird wohl hinter dem nächsten Spiel stecken?",
-
-      comingSoon: "Bald verfügbar",
-
-      wheelTitle: "🎡 Glücksrad",
-      wheelDescription: "Drehe das Rad und versuche dein Glück!",
-      spinButton: "🎡 Drehen",
-
-      oddsSummary: "🎯 Gewinnchancen anzeigen",
-
-      noWinText: "❌ Kein Gewinn",
-      oneXanaxText: "🟢 1 Xanax",
-      twoXanaxText: "🟢 2 Xanax",
-      fiveXanaxText: "🟡 5 Xanax",
-      tenXanaxText: "🔴 10 Xanax",
-
-      rtpText: "RTP:",
-      houseEdgeText: "Hausvorteil:",
-
-      testModeText: "Testmodus – noch kein echter Einsatz.",
-
-      backButton: "← Zurück",
-
-      footerText: "Torn Raffle – Community Games für Torn",
-
-      spinning: "Das Rad dreht sich... 🎡",
-      noWinResult: "❌ Kein Gewinn",
-      winResult: "🎉 Gewinn: ",
-
-      loginSuccess: "Erfolgreich angemeldet.",
-      loginError: "Anmeldung fehlgeschlagen."
-    },
-
-
-    en: {
-
-      subtitle: "Welcome to Torn Raffle!",
-
-      loginTitle: "🔐 Login",
-      loginDescription: "Log in with your Torn API key.",
-      apiPlaceholder: "Torn API Key",
-      loginButton: "Login",
-
-      tornIdLabel: "Torn ID:",
-
-      registeredPlayersLabel: "Registered Players",
-      gamesPlayedLabel: "Games Played",
-      xanaxPaidLabel: "Xanax Paid Out",
-
-      gamesTitle: "🎮 Games",
-
-      wheelGameTitle: "Lucky Wheel",
-      wheelGameDescription: "Spin the wheel and try your luck!",
-      wheelGameButton: "Play",
-
-      raffleTitle: "Raffle",
-      raffleDescription: "Big prizes in regular raffles.",
-
-      doubleTitle: "Double or Nothing",
-      doubleDescription: "Double your winnings or lose everything.",
-
-      jackpotTitle: "Community Jackpot",
-      jackpotDescription: "Play together, win together.",
-
-      dailyTitle: "Daily Reward",
-      dailyDescription: "A new chance every day.",
-
-      mysteryTitle: "Mystery Game",
-      mysteryDescription: "What could be waiting behind the next game?",
-
-      comingSoon: "Coming Soon",
-
-      wheelTitle: "🎡 Lucky Wheel",
-      wheelDescription: "Spin the wheel and try your luck!",
-      spinButton: "🎡 Spin",
-
-      oddsSummary: "🎯 Show Winning Chances",
-
-      noWinText: "❌ No Win",
-      oneXanaxText: "🟢 1 Xanax",
-      twoXanaxText: "🟢 2 Xanax",
-      fiveXanaxText: "🟡 5 Xanax",
-      tenXanaxText: "🔴 10 Xanax",
-
-      rtpText: "RTP:",
-      houseEdgeText: "House Edge:",
-
-      testModeText: "Test mode – no real stake yet.",
-
-      backButton: "← Back",
-
-      footerText: "Torn Raffle – Community Games for Torn",
-
-      spinning: "The wheel is spinning... 🎡",
-      noWinResult: "❌ No Win",
-      winResult: "🎉 Win: ",
-
-      loginSuccess: "Successfully logged in.",
-      loginError: "Login failed."
-    },
-
-
-    fr: {
-
-      subtitle: "Bienvenue sur Torn Raffle !",
-
-      loginTitle: "🔐 Connexion",
-      loginDescription: "Connectez-vous avec votre clé API Torn.",
-      apiPlaceholder: "Clé API Torn",
-      loginButton: "Se connecter",
-
-      tornIdLabel: "ID Torn :",
-
-      registeredPlayersLabel: "Joueurs inscrits",
-      gamesPlayedLabel: "Parties jouées",
-      xanaxPaidLabel: "Xanax versés",
-
-      gamesTitle: "🎮 Jeux",
-
-      wheelGameTitle: "Roue de la chance",
-      wheelGameDescription: "Tournez la roue et tentez votre chance !",
-      wheelGameButton: "Jouer",
-
-      raffleTitle: "Tirage",
-      raffleDescription: "De gros lots lors de tirages réguliers.",
-
-      doubleTitle: "Double ou Rien",
-      doubleDescription: "Doublez vos gains ou perdez tout.",
-
-      jackpotTitle: "Jackpot communautaire",
-      jackpotDescription: "Jouez ensemble, gagnez ensemble.",
-
-      dailyTitle: "Récompense quotidienne",
-      dailyDescription: "Une nouvelle chance chaque jour.",
-
-      mysteryTitle: "Jeu mystère",
-      mysteryDescription: "Que se cache-t-il derrière le prochain jeu ?",
-
-      comingSoon: "Bientôt disponible",
-
-      wheelTitle: "🎡 Roue de la chance",
-      wheelDescription: "Tournez la roue et tentez votre chance !",
-      spinButton: "🎡 Tourner",
-
-      oddsSummary: "🎯 Afficher les chances de gain",
-
-      noWinText: "❌ Aucun gain",
-      oneXanaxText: "🟢 1 Xanax",
-      twoXanaxText: "🟢 2 Xanax",
-      fiveXanaxText: "🟡 5 Xanax",
-      tenXanaxText: "🔴 10 Xanax",
-
-      rtpText: "RTP :",
-      houseEdgeText: "Avantage maison :",
-
-      testModeText: "Mode test – aucune mise réelle pour le moment.",
-
-      backButton: "← Retour",
-
-      footerText: "Torn Raffle – Jeux communautaires pour Torn",
-
-      spinning: "La roue tourne... 🎡",
-      noWinResult: "❌ Aucun gain",
-      winResult: "🎉 Gain : ",
-
-      loginSuccess: "Connexion réussie.",
-      loginError: "Échec de la connexion."
-    },
-
-
-    es: {
-
-      subtitle: "¡Bienvenido a Torn Raffle!",
-
-      loginTitle: "🔐 Iniciar sesión",
-      loginDescription: "Inicia sesión con tu clave API de Torn.",
-      apiPlaceholder: "Clave API de Torn",
-      loginButton: "Iniciar sesión",
-
-      tornIdLabel: "ID de Torn:",
-
-      registeredPlayersLabel: "Jugadores registrados",
-      gamesPlayedLabel: "Partidas jugadas",
-      xanaxPaidLabel: "Xanax pagados",
-
-      gamesTitle: "🎮 Juegos",
-
-      wheelGameTitle: "Ruleta de la suerte",
-      wheelGameDescription: "¡Gira la ruleta y prueba tu suerte!",
-      wheelGameButton: "Jugar",
-
-      raffleTitle: "Sorteo",
-      raffleDescription: "Grandes premios en sorteos regulares.",
-
-      doubleTitle: "Double or Nothing",
-      doubleDescription: "Duplica tus ganancias o piérdelo todo.",
-
-      jackpotTitle: "Jackpot comunitario",
-      jackpotDescription: "Jugad juntos, ganad juntos.",
-
-      dailyTitle: "Recompensa diaria",
-      dailyDescription: "Una nueva oportunidad cada día.",
-
-      mysteryTitle: "Juego misterioso",
-      mysteryDescription: "¿Qué habrá detrás del próximo juego?",
-
-      comingSoon: "Próximamente",
-
-      wheelTitle: "🎡 Ruleta de la suerte",
-      wheelDescription: "¡Gira la ruleta y prueba tu suerte!",
-      spinButton: "🎡 Girar",
-
-      oddsSummary: "🎯 Mostrar probabilidades",
-
-      noWinText: "❌ Sin premio",
-      oneXanaxText: "🟢 1 Xanax",
-      twoXanaxText: "🟢 2 Xanax",
-      fiveXanaxText: "🟡 5 Xanax",
-      tenXanaxText: "🔴 10 Xanax",
-
-      rtpText: "RTP:",
-      houseEdgeText: "Ventaja de la casa:",
-
-      testModeText: "Modo de prueba – todavía no hay apuesta real.",
-
-      backButton: "← Volver",
-
-      footerText: "Torn Raffle – Juegos comunitarios para Torn",
-
-      spinning: "La ruleta está girando... 🎡",
-      noWinResult: "❌ Sin premio",
-      winResult: "🎉 Premio: ",
-
-      loginSuccess: "Inicio de sesión correcto.",
-      loginError: "Error al iniciar sesión."
-    },
-
-
-    zh: {
-
-      subtitle: "欢迎来到 Torn Raffle！",
-
-      loginTitle: "🔐 登录",
-      loginDescription: "使用你的 Torn API 密钥登录。",
-      apiPlaceholder: "Torn API 密钥",
-      loginButton: "登录",
-
-      tornIdLabel: "Torn ID：",
-
-      registeredPlayersLabel: "注册玩家",
-      gamesPlayedLabel: "游戏次数",
-      xanaxPaidLabel: "已支付 Xanax",
-
-      gamesTitle: "🎮 游戏",
-
-      wheelGameTitle: "幸运转盘",
-      wheelGameDescription: "转动转盘，试试你的运气！",
-      wheelGameButton: "开始游戏",
-
-      raffleTitle: "抽奖",
-      raffleDescription: "定期举行的大型抽奖活动。",
-
-      doubleTitle: "Double or Nothing",
-      doubleDescription: "赢得双倍奖励，否则全部失去。",
-
-      jackpotTitle: "社区大奖",
-      jackpotDescription: "一起游戏，一起赢取奖励。",
-
-      dailyTitle: "每日奖励",
-      dailyDescription: "每天都有新的机会。",
-
-      mysteryTitle: "神秘游戏",
-      mysteryDescription: "下一个游戏里会有什么？",
-
-      comingSoon: "即将推出",
-
-      wheelTitle: "🎡 幸运转盘",
-      wheelDescription: "转动转盘，试试你的运气！",
-      spinButton: "🎡 转动",
-
-      oddsSummary: "🎯 查看中奖概率",
-
-      noWinText: "❌ 没有中奖",
-      oneXanaxText: "🟢 1 Xanax",
-      twoXanaxText: "🟢 2 Xanax",
-      fiveXanaxText: "🟡 5 Xanax",
-      tenXanaxText: "🔴 10 Xanax",
-
-      rtpText: "RTP：",
-      houseEdgeText: "庄家优势：",
-
-      testModeText: "测试模式 – 暂时没有真实下注。",
-
-      backButton: "← 返回",
-
-      footerText: "Torn Raffle – Torn 社区游戏",
-
-      spinning: "转盘正在旋转... 🎡",
-      noWinResult: "❌ 没有中奖",
-      winResult: "🎉 获得奖励：",
-
-      loginSuccess: "登录成功。",
-      loginError: "登录失败。"
-    }
-
-  };
-
-
-  /* =========================================================
-     SPRACHE
-     ========================================================= */
-
-  let currentLanguage =
-    localStorage.getItem("tornRaffleLanguage") || "de";
-
-
-  function changeLanguage(language) {
-
-    currentLanguage = language;
-
-    localStorage.setItem(
-      "tornRaffleLanguage",
-      language
-    );
-
-    applyTranslations();
-    updateWelcomeText();
-  }
-
-
-  function applyTranslations() {
-
-    const t = translations[currentLanguage];
-
-    document.documentElement.lang = currentLanguage;
-
-    document.getElementById("subtitle").textContent =
-      t.subtitle;
-
-    document.getElementById("loginTitle").textContent =
-      t.loginTitle;
-
-    document.getElementById("loginDescription").textContent =
-      t.loginDescription;
-
-    document.getElementById("apiKey").placeholder =
-      t.apiPlaceholder;
-
-    document.getElementById("loginButton").textContent =
-      t.loginButton;
-
-    document.getElementById("tornIdLabel").textContent =
-      t.tornIdLabel;
-
-    document.getElementById("registeredPlayersLabel").textContent =
-      t.registeredPlayersLabel;
-
-    document.getElementById("gamesPlayedLabel").textContent =
-      t.gamesPlayedLabel;
-
-    document.getElementById("xanaxPaidLabel").textContent =
-      t.xanaxPaidLabel;
-
-    document.getElementById("gamesTitle").textContent =
-      t.gamesTitle;
-
-    document.getElementById("wheelGameTitle").textContent =
-      t.wheelGameTitle;
-
-    document.getElementById("wheelGameDescription").textContent =
-      t.wheelGameDescription;
-
-    document.getElementById("wheelGameButton").textContent =
-      t.wheelGameButton;
-
-    document.getElementById("raffleTitle").textContent =
-      t.raffleTitle;
-
-    document.getElementById("raffleDescription").textContent =
-      t.raffleDescription;
-
-    document.getElementById("doubleTitle").textContent =
-      t.doubleTitle;
-
-    document.getElementById("doubleDescription").textContent =
-      t.doubleDescription;
-
-    document.getElementById("jackpotTitle").textContent =
-      t.jackpotTitle;
-
-    document.getElementById("jackpotDescription").textContent =
-      t.jackpotDescription;
-
-    document.getElementById("dailyTitle").textContent =
-      t.dailyTitle;
-
-    document.getElementById("dailyDescription").textContent =
-      t.dailyDescription;
-
-    document.getElementById("mysteryTitle").textContent =
-      t.mysteryTitle;
-
-    document.getElementById("mysteryDescription").textContent =
-      t.mysteryDescription;
-
-
-    document.querySelectorAll(
-      "#comingSoon1, #comingSoon2, #comingSoon3, #comingSoon4, #comingSoon5"
-    ).forEach(button => {
-      button.textContent = t.comingSoon;
-    });
-
-
-    document.getElementById("wheelTitle").textContent =
-      t.wheelTitle;
-
-    document.getElementById("wheelDescription").textContent =
-      t.wheelDescription;
-
-    document.getElementById("spinButton").textContent =
-      t.spinButton;
-
-    document.getElementById("oddsSummary").textContent =
-      t.oddsSummary;
-
-    document.getElementById("noWinText").textContent =
-      t.noWinText;
-
-    document.getElementById("oneXanaxText").textContent =
-      t.oneXanaxText;
-
-    document.getElementById("twoXanaxText").textContent =
-      t.twoXanaxText;
-
-    document.getElementById("fiveXanaxText").textContent =
-      t.fiveXanaxText;
-
-    document.getElementById("tenXanaxText").textContent =
-      t.tenXanaxText;
-
-    document.getElementById("rtpText").textContent =
-      t.rtpText;
-
-    document.getElementById("houseEdgeText").textContent =
-      t.houseEdgeText;
-
-    document.getElementById("testModeText").textContent =
-      t.testModeText;
-
-    document.getElementById("backButton").textContent =
-      t.backButton;
-
-    document.getElementById("footerText").textContent =
-      t.footerText;
-  }
-
-
-  /* =========================================================
-     LOGIN
-     ========================================================= */
-
-  let loggedInPlayerName = "";
-
-
-  function updateWelcomeText() {
-
-    if (!loggedInPlayerName) return;
-
-    const welcome = {
-
-      de: "Willkommen zurück, ",
-      en: "Welcome back, ",
-      fr: "Bon retour, ",
-      es: "Bienvenido de nuevo, ",
-      zh: "欢迎回来，"
-
+  <script>
+    // --- Mehrsprachigkeit ---
+    const translations = {
+      de: {
+        loginTitle: "Anmelden",
+        loginPlaceholder: "Torn API Key eingeben...",
+        btnLogin: "Login",
+        statsTitle: "Statistiken",
+        statPlayers: "Registrierte Spieler",
+        statGames: "Gespielte Runden",
+        statXanax: "Ausgezahlte Xanax",
+        wheelTitle: "Xanax Glücksrad",
+        btnSpin: "Drehen!",
+        spinning: "Das Rad dreht sich...",
+        noWinResult: "Leider nichts gewonnen. Viel Glück beim nächsten Mal!",
+        winResult: "Glückwunsch! Du hast gewonnen:",
+        errKeyRequired: "Bitte gib deinen API Key ein.",
+        errSpin: "Fehler beim Ausführen des Spins."
+      },
+      en: {
+        loginTitle: "Login",
+        loginPlaceholder: "Enter Torn API Key...",
+        btnLogin: "Login",
+        statsTitle: "Dashboard Statistics",
+        statPlayers: "Registered Players",
+        statGames: "Games Played",
+        statXanax: "Xanax Paid Out",
+        wheelTitle: "Xanax Fortune Wheel",
+        btnSpin: "Spin!",
+        spinning: "Spinning the wheel...",
+        noWinResult: "No win this time. Better luck next time!",
+        winResult: "Congratulations! You won:",
+        errKeyRequired: "Please enter your API Key.",
+        errSpin: "Error processing the spin."
+      }
     };
 
-    document.getElementById("welcomeText").textContent =
-      welcome[currentLanguage] +
-      loggedInPlayerName +
-      ".";
-  }
+    let currentLanguage = 'de';
+    let spinning = false;
+    let wheelRotation = 0;
 
+    // --- Exakte Winkelbereichs-Zuordnung passend zu conic-gradient ---
+    const segmentAngles = {
+      0:  { min: 0,     max: 198 },   // 55%  (0 Xanax)
+      1:  { min: 198,   max: 324 },   // 35%  (1 Xanax)
+      2:  { min: 324,   max: 349.2 }, // 7%   (2 Xanax)
+      5:  { min: 349.2, max: 358.2 },// 2.5% (5 Xanax)
+      10: { min: 358.2, max: 360 }   // 0.5% (10 Xanax)
+    };
 
-  async function login() {
+    // --- Tastatur-EventListener (Enter-Taste für Login) ---
+    document.getElementById("apiKey").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") login();
+    });
 
-    const apiKey =
-      document.getElementById("apiKey").value.trim();
+    // --- Sprach-Wechsler ---
+    function setLanguage(lang) {
+      currentLanguage = lang;
+      const t = translations[lang];
 
-    const message =
-      document.getElementById("loginMessage");
+      document.getElementById("lang-de").classList.toggle("active", lang === 'de');
+      document.getElementById("lang-en").classList.toggle("active", lang === 'en');
 
-    const button =
-      document.getElementById("loginButton");
-
-    const t =
-      translations[currentLanguage];
-
-
-    if (!apiKey) {
-
-      message.className = "error";
-
-      message.textContent =
-        t.loginError;
-
-      return;
+      document.getElementById("lbl-login-title").textContent = t.loginTitle;
+      document.getElementById("apiKey").placeholder = t.loginPlaceholder;
+      document.getElementById("btnLogin").textContent = t.btnLogin;
+      document.getElementById("lbl-stats-title").textContent = t.statsTitle;
+      document.getElementById("lbl-stat-players").textContent = t.statPlayers;
+      document.getElementById("lbl-stat-games").textContent = t.statGames;
+      document.getElementById("lbl-stat-xanax").textContent = t.statXanax;
+      document.getElementById("lbl-wheel-title").textContent = t.wheelTitle;
+      document.getElementById("spinButton").textContent = t.btnSpin;
     }
 
+    // --- Login Logik ---
+    function login() {
+      const apiKey = document.getElementById("apiKey").value.trim();
+      const t = translations[currentLanguage];
 
-    button.disabled = true;
+      if (!apiKey) {
+        alert(t.errKeyRequired);
+        return;
+      }
 
-    message.className = "";
+      // Erfolgreichen Login simulieren/ausführen
+      document.getElementById("authCard").classList.add("hidden");
+      document.getElementById("appArea").classList.remove("hidden");
+    }
 
-    message.textContent = "";
+    // --- Sichere Spin-Berechnung ---
+    async function spinWheel() {
+      if (spinning) return;
+      spinning = true;
 
+      const button = document.getElementById("spinButton");
+      const result = document.getElementById("wheelResult");
+      const t = translations[currentLanguage];
 
-    try {
+      button.disabled = true;
+      result.textContent = t.spinning;
 
-      const response = await fetch("/api/login", {
+      try {
+        // Mock-API-Aufruf: Ersetze diesen Block später durch deinen echten fetch() Aufruf!
+        const data = await mockApiSpinCall();
 
-        method: "POST",
+        // Target-Slice im Winkelbereich ermitteln
+        const range = segmentAngles[data.prize];
+        const targetSliceAngle = range.min + Math.random() * (range.max - range.min);
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+        // Drehung so berechnen, dass das Target genau unter dem oberen Zeiger landet
+        const stopAngle = 360 - targetSliceAngle;
+        const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
+        
+        wheelRotation += fullSpins + (stopAngle - (wheelRotation % 360));
+        document.getElementById("wheel").style.transform = `rotate(${wheelRotation}deg)`;
 
-        body: JSON.stringify({
-          apiKey: apiKey
-        })
+        // Auswertung nach Animationsende
+        setTimeout(() => {
+          result.textContent = data.prize === 0 
+            ? t.noWinResult 
+            : `${t.winResult} ${data.prize} Xanax`;
+          button.disabled = false;
+          spinning = false;
+        }, 4000);
 
+      } catch (err) {
+        result.textContent = t.errSpin;
+        button.disabled = false;
+        spinning = false;
+      }
+    }
+
+    // --- Simulierte Backend-Response (Gewichtsbasierte Zufallsentscheidung) ---
+    function mockApiSpinCall() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const rand = Math.random() * 100;
+          let prize = 0;
+
+          if (rand < 55) prize = 0;
+          else if (rand < 90) prize = 1;
+          else if (rand < 97) prize = 2;
+          else if (rand < 99.5) prize = 5;
+          else prize = 10;
+
+          resolve({ success: true, prize });
+        }, 300);
       });
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error || t.loginError
-        );
-
-      }
-
-
-      loggedInPlayerName =
-        data.name || "Player";
-
-
-      document.getElementById("playerId").textContent =
-        data.id || "-";
-
-
-      document.getElementById("loginSection").style.display =
-        "none";
-
-
-      document.getElementById("dashboard").style.display =
-        "block";
-
-
-      updateWelcomeText();
-
-
-      message.className = "success";
-
-      message.textContent =
-        t.loginSuccess;
-
-
-    } catch (error) {
-
-      message.className = "error";
-
-      message.textContent =
-        error.message || t.loginError;
-
-    } finally {
-
-      button.disabled = false;
-
     }
-
-  }
-
-
-  /* =========================================================
-     GLÜCKSRAD
-     ========================================================= */
-
-  let wheelRotation = 0;
-  let spinning = false;
-
-
-  /*
-    10 % Hausvorteil / 90 % RTP
-
-    Einsatz: 1 Xanax
-
-    55 %  -> 0 Xanax
-    35 %  -> 1 Xanax
-     7 %  -> 2 Xanax
-   2,5 %  -> 5 Xanax
-   0,5 %  -> 10 Xanax
-
-    Erwartete Auszahlung:
-
-    0 × 55 %
-    + 1 × 35 %
-    + 2 × 7 %
-    + 5 × 2,5 %
-    + 10 × 0,5 %
-    = 0,90 Xanax
-
-    RTP = 90 %
-    Hausvorteil = 10 %
-
-    WICHTIG:
-    Das ist aktuell nur Testmodus.
-    Die echte Gewinnermittlung darf später
-    NICHT clientseitig erfolgen.
-  */
-
-
-  const wheelOutcomes = [
-
-    {
-      name: "Kein Gewinn",
-      prize: 0,
-      probability: 55
-    },
-
-    {
-      name: "1 Xanax",
-      prize: 1,
-      probability: 35
-    },
-
-    {
-      name: "2 Xanax",
-      prize: 2,
-      probability: 7
-    },
-
-    {
-      name: "5 Xanax",
-      prize: 5,
-      probability: 2.5
-    },
-
-    {
-      name: "10 Xanax",
-      prize: 10,
-      probability: 0.5
-    }
-
-  ];
-
-
-  function getWheelOutcome() {
-
-    const random =
-      Math.random() * 100;
-
-    let current = 0;
-
-
-    for (const outcome of wheelOutcomes) {
-
-      current += outcome.probability;
-
-      if (random < current) {
-
-        return outcome;
-
-      }
-
-    }
-
-
-    return wheelOutcomes[0];
-
-  }
-
-
-  function openWheel() {
-
-    document.getElementById("wheelSection").style.display =
-      "block";
-
-    document.getElementById("wheelSection")
-      .scrollIntoView({
-        behavior: "smooth"
-      });
-
-  }
-
-
-  function closeWheel() {
-
-    document.getElementById("wheelSection").style.display =
-      "none";
-
-  }
-
-
-  function spinWheel() {
-
-    if (spinning) return;
-
-
-    spinning = true;
-
-
-    const button =
-      document.getElementById("spinButton");
-
-    const result =
-      document.getElementById("wheelResult");
-
-
-    const t =
-      translations[currentLanguage];
-
-
-    button.disabled = true;
-
-    result.textContent =
-      t.spinning;
-
-
-    /*
-      TESTMODUS:
-      Ergebnis wird momentan noch lokal bestimmt.
-
-      Beim echten Einsatz wird dieser Teil
-      durch einen Server-Request ersetzt.
-    */
-
-    const outcome =
-      getWheelOutcome();
-
-
-    const extraRotations =
-      5 + Math.floor(Math.random() * 4);
-
-
-    const targetAngle =
-      Math.floor(Math.random() * 360);
-
-
-    wheelRotation +=
-      (extraRotations * 360) +
-      targetAngle;
-
-
-    document.getElementById("wheel").style.transform =
-      `rotate(${wheelRotation}deg)`;
-
-
-    setTimeout(() => {
-
-      if (outcome.prize === 0) {
-
-        result.textContent =
-          t.noWinResult;
-
-      } else {
-
-        result.textContent =
-          t.winResult +
-          outcome.name;
-
-      }
-
-
-      button.disabled = false;
-
-      spinning = false;
-
-    }, 4200);
-
-  }
-
-
-  /* =========================================================
-     START
-     ========================================================= */
-
-  document.getElementById("languageSelect").value =
-    currentLanguage;
-
-  applyTranslations();
-
-</script>
-
+  </script>
 </body>
 </html>
