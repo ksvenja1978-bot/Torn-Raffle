@@ -5,51 +5,30 @@ const sql = neon(process.env.DATABASE_URL);
 
 export default async function handler(req, res) {
     if (req.method !== "POST") {
-        return res.status(405).json({
-            error: "Method not allowed"
-        });
+        return res.status(405).json({ error: "Method not allowed" });
     }
 
     try {
         const { apiKey } = req.body || {};
 
         if (!apiKey || typeof apiKey !== "string") {
-            return res.status(400).json({
-                error: "API-Key fehlt."
-            });
+            return res.status(400).json({ error: "API-Key fehlt." });
         }
 
-        // Torn API prüfen
+        // 1. Torn API abfragen
         const response = await fetch(
-            "https://api.torn.com/user/?selections=profile&key=" +
-            encodeURIComponent(apiKey)
+            `https://api.torn.com/user/?selections=profile&key=${encodeURIComponent(apiKey)}`
         );
-
         const data = await response.json();
 
         if (!response.ok || data.error) {
-            return res.status(401).json({
-                error: "Der Torn API-Key ist ungültig."
-            });
+            return res.status(401).json({ error: "Der Torn API-Key ist ungültig." });
         }
 
         const id = Number(data.player_id);
         const name = String(data.name);
 
-        // Spielertabelle anlegen
-        await sql`
-            CREATE TABLE IF NOT EXISTS players (
-                id BIGINT PRIMARY KEY,
-                name TEXT NOT NULL,
-                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                last_login TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                balance BIGINT NOT NULL DEFAULT 0,
-                games_played BIGINT NOT NULL DEFAULT 0,
-                games_won BIGINT NOT NULL DEFAULT 0
-            )
-        `;
-
-        // Spieler registrieren oder bestehenden Spieler aktualisieren
+        // 2. Spieler registrieren oder aktualisieren (Upsert)
         const playerResult = await sql`
             INSERT INTO players (id, name)
             VALUES (${id}, ${name})
@@ -62,23 +41,9 @@ export default async function handler(req, res) {
 
         const player = playerResult[0];
 
-        // Session-Tabelle anlegen
-        await sql`
-            CREATE TABLE IF NOT EXISTS sessions (
-                session_id TEXT PRIMARY KEY,
-                player_id BIGINT NOT NULL,
-                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                expires_at TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '30 days'
-            )
-        `;
+        // 3. Alte Sessions aufräumen & Neue erzeugen
+        await sql`DELETE FROM sessions WHERE player_id = ${id}`;
 
-        // Alte Session des Spielers entfernen
-        await sql`
-            DELETE FROM sessions
-            WHERE player_id = ${id}
-        `;
-
-        // Neue Session erzeugen
         const sessionId = crypto.randomBytes(32).toString("hex");
 
         await sql`
@@ -86,10 +51,10 @@ export default async function handler(req, res) {
             VALUES (${sessionId}, ${id})
         `;
 
-        // Session-Cookie setzen
+        // 4. HttpOnly Session-Cookie setzen
         res.setHeader(
             "Set-Cookie",
-            `torn_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
+            `torn_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`
         );
 
         return res.status(200).json({
@@ -103,9 +68,6 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error("Login error:", error);
-
-        return res.status(500).json({
-            error: "Serverfehler bei Login und Registrierung."
-        });
+        return res.status(500).json({ error: "Serverfehler bei Login und Registrierung." });
     }
 }
