@@ -202,6 +202,7 @@
       box-shadow: 0 0 15px rgba(255, 183, 3, 0.3);
     }
 
+    /* Präzises Glücksrad mit SVG */
     .wheel-stage {
       display: flex;
       flex-direction: column;
@@ -222,47 +223,20 @@
       filter: drop-shadow(0 0 8px var(--neon-red));
     }
 
-    .wheel {
+    .wheel-container {
       width: 320px;
       height: 320px;
       border-radius: 50%;
-      border: 8px solid #222;
+      border: 6px solid var(--neon-gold);
+      box-shadow: 0 0 25px rgba(0,0,0,0.9), 0 0 15px var(--neon-gold);
       position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px var(--neon-gold);
-      background: conic-gradient(
-        #1b1f24   0deg  36deg,
-        #00b4d8  36deg  72deg,
-        #1b1f24  72deg 108deg,
-        #00f5d4 108deg 144deg,
-        #1b1f24 144deg 180deg,
-        #00b4d8 180deg 216deg,
-        #1b1f24 216deg 252deg,
-        #ffb703 252deg 288deg,
-        #1b1f24 288deg 324deg,
-        #ff0055 324deg 360deg
-      );
-      transition: transform 4s cubic-bezier(0.15, 0.90, 0.20, 1.00);
     }
 
-    .wheel-label {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100px;
-      height: 30px;
-      margin-top: -15px;
-      margin-left: -50px;
+    #wheelSvg {
+      width: 100%;
+      height: 100%;
       transform-origin: center center;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 15px;
-      font-weight: 900;
-      font-size: 0.95rem;
-      color: #fff;
-      text-shadow: 0 0 4px #000, 0 2px 4px #000;
-      pointer-events: none;
+      transition: transform 4s cubic-bezier(0.15, 0.90, 0.20, 1.00);
     }
 
     .wheel-center {
@@ -270,8 +244,8 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 50px;
-      height: 50px;
+      width: 45px;
+      height: 45px;
       background: radial-gradient(circle, #222 0%, #000 100%);
       border: 3px solid var(--neon-gold);
       border-radius: 50%;
@@ -370,17 +344,8 @@
         <h2 style="color: var(--neon-gold);" id="lbl-wheel-title">Xanax Glücksrad</h2>
         <div class="wheel-stage">
           <div class="pointer"></div>
-          <div class="wheel" id="wheel">
-            <div class="wheel-label" style="transform: rotate(18deg) translate(90px);">0</div>
-            <div class="wheel-label" style="transform: rotate(54deg) translate(90px);">1 💊</div>
-            <div class="wheel-label" style="transform: rotate(90deg) translate(90px);">0</div>
-            <div class="wheel-label" style="transform: rotate(126deg) translate(90px);">2 💊</div>
-            <div class="wheel-label" style="transform: rotate(162deg) translate(90px);">0</div>
-            <div class="wheel-label" style="transform: rotate(198deg) translate(90px);">1 💊</div>
-            <div class="wheel-label" style="transform: rotate(234deg) translate(90px);">0</div>
-            <div class="wheel-label" style="transform: rotate(270deg) translate(90px);">5 💊</div>
-            <div class="wheel-label" style="transform: rotate(306deg) translate(90px);">0</div>
-            <div class="wheel-label" style="transform: rotate(342deg) translate(90px);">10 💊</div>
+          <div class="wheel-container">
+            <svg id="wheelSvg" viewBox="0 0 200 200"></svg>
             <div class="wheel-center"></div>
           </div>
         </div>
@@ -417,6 +382,63 @@
   </div>
 
   <script>
+    // --- Glücksrad SVG Generator ---
+    const segments = [
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "1 💊", color: "#00b4d8", value: 1 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "2 💊", color: "#00f5d4", value: 2 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "1 💊", color: "#00b4d8", value: 1 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "5 💊", color: "#ffb703", value: 5 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "10 💊", color: "#ff0055", value: 10 }
+    ];
+
+    function renderWheel() {
+      const svg = document.getElementById("wheelSvg");
+      const numSegments = segments.length;
+      const angleStep = 360 / numSegments;
+      let svgHtml = "";
+
+      segments.forEach((seg, i) => {
+        const startAngle = i * angleStep;
+        const endAngle = startAngle + angleStep;
+
+        // Bogen-Koordinaten berechnen (Radius 100, Zentrum 100,100)
+        const x1 = 100 + 100 * Math.cos((Math.PI * (startAngle - 90)) / 180);
+        const y1 = 100 + 100 * Math.sin((Math.PI * (startAngle - 90)) / 180);
+        const x2 = 100 + 100 * Math.cos((Math.PI * (endAngle - 90)) / 180);
+        const y2 = 100 + 100 * Math.sin((Math.PI * (endAngle - 90)) / 180);
+
+        const d = `M 100 100 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z`;
+
+        // Drehwinkel für den Text genau in die Mitte des Segments
+        const textAngle = startAngle + angleStep / 2;
+
+        svgHtml += `
+          <path d="${d}" fill="${seg.color}" stroke="#12121a" stroke-width="1.5"/>
+          <g transform="rotate(${textAngle}, 100, 100)">
+            <text x="100" y="32" 
+                  fill="#ffffff" 
+                  font-size="11" 
+                  font-weight="bold" 
+                  text-anchor="middle" 
+                  transform="rotate(90, 100, 32)"
+                  style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
+              ${seg.label}
+            </text>
+          </g>
+        `;
+      });
+
+      svg.innerHTML = svgHtml;
+    }
+
+    window.onload = renderWheel;
+
+    // --- Audio Engine ---
     let soundEnabled = true;
     let audioCtx = null;
 
@@ -462,7 +484,6 @@
       });
     }
 
-    // Spezielle Fanfare für den 10er Jackpot
     function playJackpotSound() {
       if (!soundEnabled) return;
       initAudio();
@@ -501,28 +522,14 @@
     let spinning = false;
     let wheelRotation = 0;
 
-    const segmentAngles = {
-      0:  [
-        { min: 4, max: 32 }, 
-        { min: 76, max: 104 }, 
-        { min: 148, max: 176 }, 
-        { min: 220, max: 248 }, 
-        { min: 292, max: 320 }
-      ],
-      1:  [
-        { min: 40, max: 68 }, 
-        { min: 184, max: 212 }
-      ],
-      2:  [{ min: 112, max: 140 }],
-      5:  [{ min: 256, max: 284 }],
-      10: [{ min: 328, max: 356 }]
+    // Zuordnung: Welches Segment (Index 0-9) gehört zu welchem Gewinn
+    const segmentIndices = {
+      0: [0, 2, 4, 6, 8],
+      1: [1, 5],
+      2: [3],
+      5: [7],
+      10: [9]
     };
-
-    function getAngleForPrize(prize) {
-      const possibleSegments = segmentAngles[prize];
-      const selectedSegment = possibleSegments[Math.floor(Math.random() * possibleSegments.length)];
-      return selectedSegment.min + Math.random() * (selectedSegment.max - selectedSegment.min);
-    }
 
     document.getElementById("apiKey").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
 
@@ -594,12 +601,20 @@
         else prize = 10;
       }
 
-      const targetAngle = getAngleForPrize(prize);
-      const stopAngle = 360 - targetAngle;
+      // Wähle zufällig eines der Segmente, die den Gewinn enthalten
+      const possibleIndices = segmentIndices[prize];
+      const targetIndex = possibleIndices[Math.floor(Math.random() * possibleIndices.length)];
+
+      // Berechne exakten Winkel für das Zentrum dieses Segments
+      const segmentAngle = 360 / segments.length;
+      const targetCenterAngle = (targetIndex * segmentAngle) + (segmentAngle / 2);
+      
+      // Stop-Winkel berechnen (Nadel steht oben bei 0 Grad)
+      const stopAngle = 360 - targetCenterAngle;
       const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
 
       wheelRotation += fullSpins + (stopAngle - (wheelRotation % 360));
-      document.getElementById("wheel").style.transform = `rotate(${wheelRotation}deg)`;
+      document.getElementById("wheelSvg").style.transform = `rotate(${wheelRotation}deg)`;
 
       let interval = setInterval(() => playTick(), 120);
       setTimeout(() => clearInterval(interval), 3600);
