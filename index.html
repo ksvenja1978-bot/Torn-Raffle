@@ -224,8 +224,8 @@
     }
 
     .wheel-container {
-      width: 320px;
-      height: 320px;
+      width: 340px;
+      height: 340px;
       border-radius: 50%;
       border: 6px solid var(--neon-gold);
       box-shadow: 0 0 25px rgba(0,0,0,0.9), 0 0 15px var(--neon-gold);
@@ -382,8 +382,19 @@
   </div>
 
   <script>
-    // --- Glücksrad SVG Generator ---
+    // --- Glücksrad SVG Generator mit 20 Feldern ---
     const segments = [
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "1 💊", color: "#00b4d8", value: 1 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "2 💊", color: "#00f5d4", value: 2 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "1 💊", color: "#00b4d8", value: 1 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "5 💊", color: "#ffb703", value: 5 },
+      { label: "0", color: "#1b1f24", value: 0 },
+      { label: "10 💊", color: "#ff0055", value: 10 },
+      // Zweiter Durchlauf für doppelte Felderdichte bei gleichen Chancen:
       { label: "0", color: "#1b1f24", value: 0 },
       { label: "1 💊", color: "#00b4d8", value: 1 },
       { label: "0", color: "#1b1f24", value: 0 },
@@ -396,6 +407,15 @@
       { label: "10 💊", color: "#ff0055", value: 10 }
     ];
 
+    // Zuordnung automatisch anhand der Segmente generieren
+    const segmentIndices = {};
+    segments.forEach((seg, index) => {
+      if (!segmentIndices[seg.value]) {
+        segmentIndices[seg.value] = [];
+      }
+      segmentIndices[seg.value].push(index);
+    });
+
     function renderWheel() {
       const svg = document.getElementById("wheelSvg");
       const numSegments = segments.length;
@@ -406,27 +426,24 @@
         const startAngle = i * angleStep;
         const endAngle = startAngle + angleStep;
 
-        // Bogen-Koordinaten berechnen (Radius 100, Zentrum 100,100)
         const x1 = 100 + 100 * Math.cos((Math.PI * (startAngle - 90)) / 180);
         const y1 = 100 + 100 * Math.sin((Math.PI * (startAngle - 90)) / 180);
         const x2 = 100 + 100 * Math.cos((Math.PI * (endAngle - 90)) / 180);
         const y2 = 100 + 100 * Math.sin((Math.PI * (endAngle - 90)) / 180);
 
         const d = `M 100 100 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z`;
-
-        // Drehwinkel für den Text genau in die Mitte des Segments
         const textAngle = startAngle + angleStep / 2;
 
         svgHtml += `
-          <path d="${d}" fill="${seg.color}" stroke="#12121a" stroke-width="1.5"/>
+          <path d="${d}" fill="${seg.color}" stroke="#12121a" stroke-width="0.8"/>
           <g transform="rotate(${textAngle}, 100, 100)">
-            <text x="100" y="32" 
+            <text x="100" y="24" 
                   fill="#ffffff" 
-                  font-size="11" 
+                  font-size="7.5" 
                   font-weight="bold" 
                   text-anchor="middle" 
-                  transform="rotate(90, 100, 32)"
-                  style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
+                  transform="rotate(90, 100, 24)"
+                  style="text-shadow: 0 1px 2px rgba(0,0,0,0.9);">
               ${seg.label}
             </text>
           </g>
@@ -522,15 +539,6 @@
     let spinning = false;
     let wheelRotation = 0;
 
-    // Zuordnung: Welches Segment (Index 0-9) gehört zu welchem Gewinn
-    const segmentIndices = {
-      0: [0, 2, 4, 6, 8],
-      1: [1, 5],
-      2: [3],
-      5: [7],
-      10: [9]
-    };
-
     document.getElementById("apiKey").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
 
     function setLanguage(lang) {
@@ -601,15 +609,13 @@
         else prize = 10;
       }
 
-      // Wähle zufällig eines der Segmente, die den Gewinn enthalten
+      // Dynamische Index-Auswahl
       const possibleIndices = segmentIndices[prize];
       const targetIndex = possibleIndices[Math.floor(Math.random() * possibleIndices.length)];
 
-      // Berechne exakten Winkel für das Zentrum dieses Segments
       const segmentAngle = 360 / segments.length;
       const targetCenterAngle = (targetIndex * segmentAngle) + (segmentAngle / 2);
       
-      // Stop-Winkel berechnen (Nadel steht oben bei 0 Grad)
       const stopAngle = 360 - targetCenterAngle;
       const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
 
