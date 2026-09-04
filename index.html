@@ -3,165 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Torn Raffle - Ultimate Spin</title>
+  <title>Torn Casino - High Roller Lounge</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
-      --bg-color: #0d1117;
-      --card-bg: #161b22;
-      --accent-color: #238636;
-      --accent-hover: #2ea043;
-      --text-color: #c9d1d9;
-      --text-bright: #ffffff;
-      --border-color: #30363d;
-      --wheel-border: #8b949e;
+      --bg-dark: #0a0a0f;
+      --card-bg: rgba(18, 18, 26, 0.85);
+      --neon-gold: #ffb703;
+      --neon-red: #ff0055;
+      --neon-green: #00f5d4;
+      --neon-blue: #00b4d8;
+      --text-main: #f1f2f6;
+      --border-glow: rgba(255, 183, 3, 0.3);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0f 100%);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
       padding: 20px;
+      overflow-x: hidden;
     }
 
+    /* Top Bar & Branding */
     header {
       width: 100%;
-      max-width: 800px;
+      max-width: 900px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 30px;
+      padding: 15px 25px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 0 15px rgba(255, 183, 3, 0.2);
+      border-radius: 12px;
+      margin-bottom: 25px;
+      backdrop-filter: blur(10px);
     }
 
-    h1 {
-      color: var(--text-bright);
+    h1.logo {
       font-size: 1.8rem;
+      color: var(--neon-gold);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px var(--neon-gold), 0 0 20px rgba(255, 183, 3, 0.5);
     }
 
-    .header-controls {
+    .header-actions {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
-    .sound-toggle {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 6px 12px;
+    .btn-icon {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-main);
+      padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
-      font-size: 1rem;
+      transition: all 0.2s;
     }
 
-    .lang-switch {
-      display: flex;
-      gap: 5px;
+    .btn-icon:hover {
+      background: rgba(255,255,255,0.15);
+      box-shadow: 0 0 8px var(--neon-blue);
     }
 
-    .lang-switch button {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .lang-switch button.active {
-      border-color: var(--accent-color);
-      color: var(--text-bright);
+    .lang-btn.active {
+      border-color: var(--neon-gold);
+      color: var(--neon-gold);
       font-weight: bold;
     }
 
+    /* Container */
     .container {
       width: 100%;
-      max-width: 800px;
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
+      max-width: 900px;
     }
 
-    .card {
+    /* Card Styling */
+    .casino-card {
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 20px;
+      border: 1px solid var(--border-glow);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      margin-bottom: 25px;
     }
 
-    .auth-box {
+    /* Login Form */
+    .auth-group {
       display: flex;
       gap: 10px;
+      margin-top: 10px;
     }
 
     input[type="password"] {
       flex: 1;
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      color: var(--text-bright);
-      padding: 10px 14px;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 183, 3, 0.4);
+      color: #fff;
+      padding: 12px 16px;
       border-radius: 6px;
       outline: none;
+      font-size: 1rem;
+      transition: border 0.3s;
     }
 
-    input:focus {
-      border-color: var(--accent-color);
+    input[type="password"]:focus {
+      border-color: var(--neon-gold);
+      box-shadow: 0 0 10px rgba(255, 183, 3, 0.4);
     }
 
-    button.btn-primary {
-      background: var(--accent-color);
-      color: var(--text-bright);
+    .btn-casino {
+      background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
+      color: #000;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: 6px;
       font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      box-shadow: 0 0 12px rgba(255, 183, 3, 0.4);
     }
 
-    button.btn-primary:hover {
-      background: var(--accent-hover);
+    .btn-casino:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(255, 183, 3, 0.8);
     }
 
-    button:disabled {
-      opacity: 0.5;
+    .btn-casino:disabled {
+      opacity: 0.4;
       cursor: not-allowed;
+      transform: none;
     }
 
+    /* Stats Grid */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 15px;
     }
 
-    .stat-card {
-      background: var(--bg-color);
+    .stat-box {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.08);
       padding: 15px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
+      border-radius: 8px;
       text-align: center;
     }
 
-    .stat-value {
-      font-size: 1.5rem;
+    .stat-box .title {
+      font-size: 0.85rem;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .stat-box .val {
+      font-size: 1.6rem;
       font-weight: bold;
-      color: var(--text-bright);
+      color: var(--neon-green);
+      text-shadow: 0 0 8px rgba(0, 245, 212, 0.4);
       margin-top: 5px;
     }
 
-    .wheel-container {
+    /* Game Navigation Tabs */
+    .game-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: rgba(20, 20, 30, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #aaa;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(255, 183, 3, 0.2), rgba(255, 0, 85, 0.2));
+      border-color: var(--neon-gold);
+      color: var(--neon-gold);
+      box-shadow: 0 0 15px rgba(255, 183, 3, 0.3);
+    }
+
+    /* Wheel Area */
+    .wheel-stage {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -172,110 +221,151 @@
     .pointer {
       width: 0;
       height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-top: 25px solid #ff4757;
+      border-left: 18px solid transparent;
+      border-right: 18px solid transparent;
+      border-top: 30px solid var(--neon-red);
       position: absolute;
-      top: -10px;
+      top: -12px;
       z-index: 10;
-      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5));
+      filter: drop-shadow(0 0 8px var(--neon-red));
     }
 
     .wheel {
-      width: 300px;
-      height: 300px;
+      width: 320px;
+      height: 320px;
       border-radius: 50%;
-      border: 6px solid var(--wheel-border);
+      border: 8px solid #222;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px var(--neon-gold);
       background: conic-gradient(
-        #2f3542 0deg 198deg,       /* 0 Xanax - 55% */
-        #1e90ff 198deg 324deg,    /* 1 Xanax - 35% */
-        #2ed573 324deg 349.2deg,  /* 2 Xanax - 7% */
-        #ffa502 349.2deg 358.2deg,/* 5 Xanax - 2.5% */
-        #ff4757 358.2deg 360deg   /* 10 Xanax - 0.5% */
+        #111 0deg 198deg,          /* 0 Xanax */
+        #00b4d8 198deg 324deg,    /* 1 Xanax */
+        #00f5d4 324deg 349.2deg,  /* 2 Xanax */
+        #ffb703 349.2deg 358.2deg,/* 5 Xanax */
+        #ff0055 358.2deg 360deg   /* 10 Xanax */
       );
       transition: transform 4s cubic-bezier(0.15, 0.90, 0.20, 1.00);
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
     }
 
-    .wheel-controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .result-message {
-      font-size: 1.2rem;
+    .game-result {
+      font-size: 1.3rem;
       font-weight: bold;
-      min-height: 28px;
-      color: var(--text-bright);
+      text-align: center;
+      min-height: 35px;
+      margin-top: 15px;
+      color: var(--neon-gold);
+      text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
     }
 
-    .hidden {
-      display: none !important;
+    /* Slots Placeholder Game */
+    .slots-display {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
     }
+
+    .slot-reel {
+      width: 80px;
+      height: 100px;
+      background: #000;
+      border: 2px solid var(--neon-gold);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: inset 0 0 15px rgba(255,183,3,0.3);
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Torn Raffle</h1>
-    <div class="header-controls">
-      <button class="sound-toggle" id="soundBtn" onclick="toggleSound()">🔊</button>
-      <div class="lang-switch">
-        <button id="lang-de" class="active" onclick="setLanguage('de')">DE</button>
-        <button id="lang-en" onclick="setLanguage('en')">EN</button>
-        <button id="lang-es" onclick="setLanguage('es')">ES</button>
-        <button id="lang-fr" onclick="setLanguage('fr')">FR</button>
-      </div>
+    <h1 class="logo">🎰 Torn Casino</h1>
+    <div class="header-actions">
+      <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔊</button>
+      <button class="btn-icon lang-btn active" id="lang-de" onclick="setLanguage('de')">DE</button>
+      <button class="btn-icon lang-btn" id="lang-en" onclick="setLanguage('en')">EN</button>
+      <button class="btn-icon lang-btn" id="lang-es" onclick="setLanguage('es')">ES</button>
+      <button class="btn-icon lang-btn" id="lang-fr" onclick="setLanguage('fr')">FR</button>
     </div>
   </header>
 
   <div class="container">
     
     <!-- Login Card -->
-    <div id="authCard" class="card">
-      <h2 style="margin-bottom: 15px;" id="lbl-login-title">Anmelden</h2>
-      <div class="auth-box">
-        <input type="password" id="apiKey" placeholder="Torn API Key eingeben..." />
-        <button class="btn-primary" id="btnLogin" onclick="login()">Login</button>
+    <div id="authCard" class="casino-card">
+      <h2 style="color: var(--neon-gold); margin-bottom: 10px;" id="lbl-login-title">Casino Zugang</h2>
+      <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 15px;">Authentifiziere dich mit deinem Torn API Key um zu spielen.</p>
+      <div class="auth-group">
+        <input type="password" id="apiKey" placeholder="Torn API Key..." />
+        <button class="btn-casino" id="btnLogin" onclick="login()">Eintreten</button>
       </div>
     </div>
 
-    <!-- Hauptbereich -->
+    <!-- Main Casino Area -->
     <div id="appArea" class="hidden">
       
-      <!-- Stats Dashboard -->
-      <div class="card">
-        <h2 style="margin-bottom: 15px;" id="lbl-stats-title">Statistiken</h2>
+      <!-- Stats -->
+      <div class="casino-card">
         <div class="stats-grid">
-          <div class="stat-card">
-            <div id="lbl-stat-players">Spieler</div>
-            <div class="stat-value" id="val-players">1,248</div>
+          <div class="stat-box">
+            <div class="title" id="lbl-stat-players">Spieler</div>
+            <div class="val" id="val-players">1,248</div>
           </div>
-          <div class="stat-card">
-            <div id="lbl-stat-games">Gespielte Runden</div>
-            <div class="stat-value" id="val-games">18,592</div>
+          <div class="stat-box">
+            <div class="title" id="lbl-stat-games">Gespielte Runden</div>
+            <div class="val" id="val-games">18,592</div>
           </div>
-          <div class="stat-card">
-            <div id="lbl-stat-xanax">Ausgezahlte Xanax</div>
-            <div class="stat-value" id="val-xanax">9,410</div>
+          <div class="stat-box">
+            <div class="title" id="lbl-stat-xanax">Ausgezahlte Xanax</div>
+            <div class="val" id="val-xanax">9,410</div>
           </div>
         </div>
       </div>
 
-      <!-- Glücksrad -->
-      <div class="card">
-        <h2 style="text-align: center;" id="lbl-wheel-title">Xanax Glücksrad</h2>
-        <div class="wheel-container">
+      <!-- Game Selection Tabs -->
+      <div class="game-tabs">
+        <div class="tab-btn active" onclick="switchGame('wheel')">🎡 Glücksrad</div>
+        <div class="tab-btn" onclick="switchGame('slots')">🎰 Xanax Slots</div>
+        <div class="tab-btn" onclick="switchGame('coin')">🪙 Coin Flip</div>
+      </div>
+
+      <!-- GAME 1: WHEEL -->
+      <div id="game-wheel" class="casino-card" style="text-align: center;">
+        <h2 style="color: var(--neon-gold);" id="lbl-wheel-title">Xanax Glücksrad</h2>
+        <div class="wheel-stage">
           <div class="pointer"></div>
           <div class="wheel" id="wheel"></div>
         </div>
-        <div class="wheel-controls">
-          <button class="btn-primary" id="spinButton" style="font-size: 1.1rem; padding: 12px 30px;" onclick="spinWheel()">Drehen!</button>
-          <div class="result-message" id="wheelResult"></div>
+        <button class="btn-casino" id="spinButton" style="font-size: 1.2rem; padding: 15px 40px;" onclick="spinWheel()">Drehen!</button>
+        <div class="game-result" id="wheelResult"></div>
+      </div>
+
+      <!-- GAME 2: SLOTS -->
+      <div id="game-slots" class="casino-card hidden" style="text-align: center;">
+        <h2 style="color: var(--neon-gold);">Xanax Slot Machine</h2>
+        <div class="slots-display">
+          <div class="slot-reel" id="reel1">💊</div>
+          <div class="slot-reel" id="reel2">💊</div>
+          <div class="slot-reel" id="reel3">💊</div>
         </div>
+        <button class="btn-casino" id="slotButton" style="font-size: 1.2rem; padding: 15px 40px;" onclick="playSlots()">Hebel Ziehen!</button>
+        <div class="game-result" id="slotsResult"></div>
+      </div>
+
+      <!-- GAME 3: COIN FLIP -->
+      <div id="game-coin" class="casino-card hidden" style="text-align: center;">
+        <h2 style="color: var(--neon-gold);">Double or Nothing (Coin Flip)</h2>
+        <p style="color: #aaa; margin: 15px 0;">Setze 1 Xanax auf Kopf oder Zahl.</p>
+        <div style="font-size: 4rem; margin: 20px;" id="coinDisplay">🪙</div>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px;">
+          <button class="btn-casino" onclick="playCoin('Kopf')">Kopf</button>
+          <button class="btn-casino" onclick="playCoin('Zahl')">Zahl</button>
+        </div>
+        <div class="game-result" id="coinResult"></div>
       </div>
 
     </div>
@@ -283,14 +373,12 @@
   </div>
 
   <script>
-    // --- Audio Engine (Web Audio API) ---
+    // --- Audio Engine ---
     let soundEnabled = true;
     let audioCtx = null;
 
     function initAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
 
     function toggleSound() {
@@ -298,150 +386,70 @@
       document.getElementById("soundBtn").textContent = soundEnabled ? "🔊" : "🔇";
     }
 
-    // Klick-Sound beim Drehen des Rads
-    function playTickSound() {
+    function playTick() {
       if (!soundEnabled) return;
       initAudio();
-      
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      
       osc.type = "sine";
-      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.04);
-      
-      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
-      
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.03);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.03);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
-      
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.04);
+      osc.stop(audioCtx.currentTime + 0.03);
     }
 
-    // Fanfare beim Gewinn
     function playWinSound() {
       if (!soundEnabled) return;
       initAudio();
-
-      const notes = [261.63, 329.63, 392.00, 523.25]; // C, E, G, High C
-      notes.forEach((freq, idx) => {
+      [261.63, 329.63, 392.00, 523.25, 659.25].forEach((freq, idx) => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-
         osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.1);
-
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.1 + 0.3);
-
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.08 + 0.25);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-
-        osc.start(audioCtx.currentTime + idx * 0.1);
-        osc.stop(audioCtx.currentTime + idx * 0.1 + 0.3);
+        osc.start(audioCtx.currentTime + idx * 0.08);
+        osc.stop(audioCtx.currentTime + idx * 0.08 + 0.25);
       });
     }
 
-    // --- Sprachen ---
+    // --- Translations ---
     const translations = {
-      de: {
-        loginTitle: "Anmelden",
-        loginPlaceholder: "Torn API Key eingeben...",
-        btnLogin: "Login",
-        statsTitle: "Statistiken",
-        statPlayers: "Registrierte Spieler",
-        statGames: "Gespielte Runden",
-        statXanax: "Ausgezahlte Xanax",
-        wheelTitle: "Xanax Glücksrad",
-        btnSpin: "Drehen!",
-        spinning: "Das Rad dreht sich...",
-        noWinResult: "Leider nichts gewonnen. Viel Glück beim nächsten Mal!",
-        winResult: "Glückwunsch! Du hast gewonnen:",
-        errKeyRequired: "Bitte gib deinen API Key ein.",
-        errSpin: "Fehler beim Ausführen des Spins."
-      },
-      en: {
-        loginTitle: "Login",
-        loginPlaceholder: "Enter Torn API Key...",
-        btnLogin: "Login",
-        statsTitle: "Dashboard Statistics",
-        statPlayers: "Registered Players",
-        statGames: "Games Played",
-        statXanax: "Xanax Paid Out",
-        wheelTitle: "Xanax Fortune Wheel",
-        btnSpin: "Spin!",
-        spinning: "Spinning the wheel...",
-        noWinResult: "No win this time. Better luck next time!",
-        winResult: "Congratulations! You won:",
-        errKeyRequired: "Please enter your API Key.",
-        errSpin: "Error processing the spin."
-      },
-      es: {
-        loginTitle: "Iniciar Sesión",
-        loginPlaceholder: "Ingrese la clave API de Torn...",
-        btnLogin: "Entrar",
-        statsTitle: "Estadísticas",
-        statPlayers: "Jugadores Registrados",
-        statGames: "Partidas Jugadas",
-        statXanax: "Xanax Pagados",
-        wheelTitle: "Ruleta de Xanax",
-        btnSpin: "¡Girar!",
-        spinning: "Girando la ruleta...",
-        noWinResult: "Sin suerte esta vez. ¡Inténtalo de nuevo!",
-        winResult: "¡Felicidades! Has ganado:",
-        errKeyRequired: "Por favor ingrese su clave API.",
-        errSpin: "Error al procesar el giro."
-      },
-      fr: {
-        loginTitle: "Connexion",
-        loginPlaceholder: "Entrez la clé API Torn...",
-        btnLogin: "Connexion",
-        statsTitle: "Statistiques",
-        statPlayers: "Joueurs Inscrits",
-        statGames: "Parties Jouées",
-        statXanax: "Xanax Distribués",
-        wheelTitle: "Roue de la Fortune Xanax",
-        btnSpin: "Tourner!",
-        spinning: "La roue tourne...",
-        noWinResult: "Pas de chance cette fois. Réessayez!",
-        winResult: "Félicitations! Vous avez gagné:",
-        errKeyRequired: "Veuillez entrer votre clé API.",
-        errSpin: "Erreur lors du tirage."
-      }
+      de: { loginTitle: "Casino Zugang", btnLogin: "Eintreten", statPlayers: "Spieler", statGames: "Gespielte Runden", statXanax: "Ausgezahlte Xanax", wheelTitle: "Xanax Glücksrad", btnSpin: "Drehen!", spinning: "Das Rad dreht sich...", win: "Gewonnen: ", noWin: "Leider Niete!" },
+      en: { loginTitle: "Casino Entrance", btnLogin: "Enter", statPlayers: "Players", statGames: "Games Played", statXanax: "Xanax Paid", wheelTitle: "Xanax Fortune Wheel", btnSpin: "Spin!", spinning: "Spinning...", win: "Won: ", noWin: "No win!" },
+      es: { loginTitle: "Entrada al Casino", btnLogin: "Entrar", statPlayers: "Jugadores", statGames: "Partidas", statXanax: "Xanax Pagados", wheelTitle: "Ruleta de Xanax", btnSpin: "¡Girar!", spinning: "Girando...", win: "Ganado: ", noWin: "¡Sin suerte!" },
+      fr: { loginTitle: "Accès Casino", btnLogin: "Entrer", statPlayers: "Joueurs", statGames: "Parties", statXanax: "Xanax Distribués", wheelTitle: "Roue Xanax", btnSpin: "Tourner!", spinning: "Tourne...", win: "Gagné: ", noWin: "Perdu!" }
     };
 
-    let currentLanguage = 'de';
+    let currentLang = 'de';
+    let userApiKey = '';
     let spinning = false;
     let wheelRotation = 0;
-    let userApiKey = '';
 
     const segmentAngles = {
-      0:  { min: 0,     max: 198 },   // 55%
-      1:  { min: 198,   max: 324 },   // 35%
-      2:  { min: 324,   max: 349.2 }, // 7%
-      5:  { min: 349.2, max: 358.2 },// 2.5%
-      10: { min: 358.2, max: 360 }   // 0.5%
+      0: { min: 0, max: 198 },
+      1: { min: 198, max: 324 },
+      2: { min: 324, max: 349.2 },
+      5: { min: 349.2, max: 358.2 },
+      10: { min: 358.2, max: 360 }
     };
 
-    document.getElementById("apiKey").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") login();
-    });
+    document.getElementById("apiKey").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
 
     function setLanguage(lang) {
-      currentLanguage = lang;
+      currentLang = lang;
       const t = translations[lang];
-
       ['de', 'en', 'es', 'fr'].forEach(l => {
-        const btn = document.getElementById(`lang-${l}`);
-        if (btn) btn.classList.toggle("active", l === lang);
+        document.getElementById(`lang-${l}`).classList.toggle("active", l === lang);
       });
-
       document.getElementById("lbl-login-title").textContent = t.loginTitle;
-      document.getElementById("apiKey").placeholder = t.loginPlaceholder;
       document.getElementById("btnLogin").textContent = t.btnLogin;
-      document.getElementById("lbl-stats-title").textContent = t.statsTitle;
       document.getElementById("lbl-stat-players").textContent = t.statPlayers;
       document.getElementById("lbl-stat-games").textContent = t.statGames;
       document.getElementById("lbl-stat-xanax").textContent = t.statXanax;
@@ -449,100 +457,134 @@
       document.getElementById("spinButton").textContent = t.btnSpin;
     }
 
-    async function login() {
-      const apiKey = document.getElementById("apiKey").value.trim();
-      const t = translations[currentLanguage];
-
-      if (!apiKey) {
-        alert(t.errKeyRequired);
-        return;
-      }
-
-      initAudio(); // AudioContext bei Nutzer-Interaktion starten
-
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ apiKey })
-        });
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.error);
-
-        userApiKey = apiKey;
-        document.getElementById("authCard").classList.add("hidden");
-        document.getElementById("appArea").classList.remove("hidden");
-      } catch (err) {
-        userApiKey = apiKey;
-        document.getElementById("authCard").classList.add("hidden");
-        document.getElementById("appArea").classList.remove("hidden");
-      }
+    function switchGame(gameKey) {
+      ['wheel', 'slots', 'coin'].forEach(g => {
+        document.getElementById(`game-${g}`).classList.add("hidden");
+      });
+      document.querySelectorAll(".tab-btn").forEach((btn, idx) => {
+        btn.classList.toggle("active", (idx === 0 && gameKey==='wheel') || (idx === 1 && gameKey==='slots') || (idx === 2 && gameKey==='coin'));
+      });
+      document.getElementById(`game-${gameKey}`).classList.remove("hidden");
     }
 
+    function login() {
+      const key = document.getElementById("apiKey").value.trim();
+      if (!key) return alert("API Key erforderlich!");
+      initAudio();
+      userApiKey = key;
+      document.getElementById("authCard").classList.add("hidden");
+      document.getElementById("appArea").classList.remove("hidden");
+    }
+
+    // --- GAME 1: WHEEL ---
     async function spinWheel() {
       if (spinning) return;
       spinning = true;
       initAudio();
 
-      const button = document.getElementById("spinButton");
-      const result = document.getElementById("wheelResult");
-      const t = translations[currentLanguage];
+      const btn = document.getElementById("spinButton");
+      const res = document.getElementById("wheelResult");
+      const t = translations[currentLang];
 
-      button.disabled = true;
-      result.textContent = t.spinning;
+      btn.disabled = true;
+      res.textContent = t.spinning;
 
-      try {
-        let prize = 0;
+      let prize = 0;
+      const rand = Math.random() * 100;
+      if (rand < 55) prize = 0;
+      else if (rand < 90) prize = 1;
+      else if (rand < 97) prize = 2;
+      else if (rand < 99.5) prize = 5;
+      else prize = 10;
 
-        try {
-          const response = await fetch('/api/spin', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-api-key': userApiKey 
-            }
-          });
-          const data = await response.json();
-          if (!response.ok) throw new Error(data.error);
-          prize = data.prize;
-        } catch {
-          const rand = Math.random() * 100;
-          if (rand < 55) prize = 0;
-          else if (rand < 90) prize = 1;
-          else if (rand < 97) prize = 2;
-          else if (rand < 99.5) prize = 5;
-          else prize = 10;
+      const range = segmentAngles[prize];
+      const targetAngle = range.min + Math.random() * (range.max - range.min);
+      const stopAngle = 360 - targetAngle;
+      const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
+
+      wheelRotation += fullSpins + (stopAngle - (wheelRotation % 360));
+      document.getElementById("wheel").style.transform = `rotate(${wheelRotation}deg)`;
+
+      let interval = setInterval(() => playTick(), 120);
+      setTimeout(() => clearInterval(interval), 3600);
+
+      setTimeout(() => {
+        if (prize > 0) {
+          playWinSound();
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+          res.textContent = `${t.win} ${prize} Xanax! 🎉`;
+        } else {
+          res.textContent = t.noWin;
         }
-
-        const range = segmentAngles[prize];
-        const targetSliceAngle = range.min + Math.random() * (range.max - range.min);
-        const stopAngle = 360 - targetSliceAngle;
-        const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
-        
-        wheelRotation += fullSpins + (stopAngle - (wheelRotation % 360));
-        document.getElementById("wheel").style.transform = `rotate(${wheelRotation}deg)`;
-
-        // Klick-Geräusche während der Spin-Animation simulieren
-        let tickInterval = setInterval(() => playTickSound(), 150);
-        setTimeout(() => clearInterval(tickInterval), 3500);
-
-        setTimeout(() => {
-          if (prize > 0) {
-            playWinSound();
-            result.textContent = `${t.winResult} ${prize} Xanax`;
-          } else {
-            result.textContent = t.noWinResult;
-          }
-          button.disabled = false;
-          spinning = false;
-        }, 4000);
-
-      } catch (err) {
-        result.textContent = t.errSpin;
-        button.disabled = false;
+        btn.disabled = false;
         spinning = false;
-      }
+      }, 4000);
+    }
+
+    // --- GAME 2: SLOTS ---
+    function playSlots() {
+      initAudio();
+      const symbols = ["💊", "💎", "7️⃣", "🍋", "💣"];
+      const btn = document.getElementById("slotButton");
+      const res = document.getElementById("slotsResult");
+      btn.disabled = true;
+      res.textContent = "Dreht...";
+
+      let counter = 0;
+      let slotInterval = setInterval(() => {
+        playTick();
+        document.getElementById("reel1").textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        document.getElementById("reel2").textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        document.getElementById("reel3").textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        counter++;
+        if (counter > 15) {
+          clearInterval(slotInterval);
+          const r1 = symbols[Math.floor(Math.random() * symbols.length)];
+          const r2 = symbols[Math.floor(Math.random() * symbols.length)];
+          const r3 = symbols[Math.floor(Math.random() * symbols.length)];
+          
+          document.getElementById("reel1").textContent = r1;
+          document.getElementById("reel2").textContent = r2;
+          document.getElementById("reel3").textContent = r3;
+
+          if (r1 === r2 && r2 === r3) {
+            playWinSound();
+            confetti({ particleCount: 150, spread: 90 });
+            res.textContent = "JACKPOT! 3x Xanax Gewonnen!";
+          } else {
+            res.textContent = "Kein Gewinn. Versuch es noch einmal!";
+          }
+          btn.disabled = false;
+        }
+      }, 100);
+    }
+
+    // --- GAME 3: COIN FLIP ---
+    function playCoin(choice) {
+      initAudio();
+      const res = document.getElementById("coinResult");
+      const coin = document.getElementById("coinDisplay");
+      res.textContent = "Münze fliegt...";
+      
+      let flipCount = 0;
+      let interval = setInterval(() => {
+        playTick();
+        coin.textContent = flipCount % 2 === 0 ? "🪙" : "🟡";
+        flipCount++;
+        if (flipCount > 10) {
+          clearInterval(interval);
+          const outcome = Math.random() > 0.5 ? "Kopf" : "Zahl";
+          coin.textContent = outcome === "Kopf" ? "🪙" : "🟡";
+
+          if (choice === outcome) {
+            playWinSound();
+            confetti({ particleCount: 80, spread: 60 });
+            res.textContent = `Richtig! Es war ${outcome}. Du gewinnst 2 Xanax!`;
+          } else {
+            res.textContent = `Falsch! Es war ${outcome}. Einsatz verloren.`;
+          }
+        }
+      }, 100);
     }
   </script>
 </body>
