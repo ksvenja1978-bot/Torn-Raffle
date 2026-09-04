@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Torn High Roller Club</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --gold: #ffd700;
+      --gold-glow: rgba(255, 215, 0, 0.4);
+      --red: #ff0055;
+      --cyan: #00f5d4;
+      --bg-dark: #050508;
+      --card-bg: rgba(15, 15, 25, 0.9);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rajdhani', 'Segoe UI', sans-serif; }
+
+    body {
+      background: radial-gradient(circle at center, #121324 0%, var(--bg-dark) 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 950px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background: var(--card-bg);
+      border: 1px solid var(--gold-glow);
+      border-radius: 12px;
+      box-shadow: 0 0 20px var(--gold-glow);
+      margin-bottom: 20px;
+    }
+
+    .brand { font-size: 2rem; font-weight: bold; color: var(--gold); letter-spacing: 2px; text-shadow: 0 0 10px var(--gold); }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255,255,255,0.05);
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,215,0,0.3);
+    }
+
+    .balance-badge { color: var(--cyan); font-weight: bold; font-size: 1.2rem; }
+
+    .container { width: 100%; max-width: 950px; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--gold-glow);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #ffd700 0%, #ff8800 100%);
+      color: #000;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 6px;
+      font-weight: bold;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--gold); }
+
+    .input-field {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--gold-glow);
+      color: #fff;
+      padding: 12px;
+      border-radius: 6px;
+      outline: none;
+      width: 100%;
+    }
+
+    /* WHEEL SVG */
+    .wheel-stage { display: flex; flex-direction: column; align-items: center; position: relative; margin: 20px 0; }
+    .pointer {
+      width: 0; height: 0;
+      border-left: 18px solid transparent; border-right: 18px solid transparent;
+      border-top: 32px solid var(--red);
+      position: absolute; top: -12px; z-index: 10;
+      filter: drop-shadow(0 0 10px var(--red));
+    }
+    .wheel-box { width: 340px; height: 340px; border-radius: 50%; border: 6px solid var(--gold); box-shadow: 0 0 30px var(--gold-glow); position: relative; }
+    #wheelSvg { width: 100%; height: 100%; transform-origin: center center; transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">💎 TORN HIGH ROLLER</div>
+    <div id="userHeader" class="user-pill hidden">
+      <span id="userName">Player</span>
+      <span class="balance-badge">💊 <span id="userBalance">0</span> Xanax</span>
+      <button class="btn" style="padding: 5px 10px; font-size: 0.8rem;" onclick="openWithdrawModal()">Auszahlen</button>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- LOGIN SCREEN -->
+    <div id="loginCard" class="card" style="text-align: center;">
+      <h2 style="color: var(--gold); margin-bottom: 15px;">Willkommen im Club</h2>
+      <p style="color: #aaa; margin-bottom: 20px;">Gib deinen Torn API Key ein, um dich einzuloggen und dein Bankroll zu verwalten.</p>
+      <div style="max-width: 400px; margin: 0 auto; display: flex; gap: 10px;">
+        <input type="password" id="apiKeyInput" class="input-field" placeholder="Torn API Key..." />
+        <button class="btn" onclick="login()">Login</button>
+      </div>
+    </div>
+
+    <!-- MAIN GAME AREA -->
+    <div id="gameCard" class="card hidden" style="text-align: center;">
+      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px;">
+        <button class="btn" onclick="toggleAudio()">🎵 Musik & Sound An/Aus</button>
+      </div>
+
+      <h2 style="color: var(--gold);">Xanax Glücksrad</h2>
+      <div class="wheel-stage">
+        <div class="pointer"></div>
+        <div class="wheel-box">
+          <svg id="wheelSvg" viewBox="0 0 200 200"></svg>
+        </div>
+      </div>
+      <button class="btn" id="spinBtn" style="font-size: 1.3rem; padding: 15px 50px;" onclick="spin()">Drehen!</button>
+      <div id="resultText" style="margin-top: 20px; font-size: 1.4rem; color: var(--gold); min-height: 40px;"></div>
+    </div>
+
+  </div>
+
+  <script>
+    let apiKey = '';
+    let balance = 0;
+    let audioActive = false;
+    let audioCtx = null;
+    let bgOsc = null;
+
+    const segments = [
+      { label: "0", color: "#111", value: 0 },
+      { label: "1 💊", color: "#00b4d8", value: 1 },
+      { label: "0", color: "#111", value: 0 },
+      { label: "2 💊", color: "#00f5d4", value: 2 },
+      { label: "0", color: "#111", value: 0 },
+      { label: "1 💊", color: "#00b4d8", value: 1 },
+      { label: "0", color: "#111", value: 0 },
+      { label: "5 💊", color: "#ffd700", value: 5 },
+      { label: "0", color: "#111", value: 0 },
+      { label: "10 💊", color: "#ff0055", value: 10 }
+    ];
+
+    // SVG Rad rendern
+    function buildWheel() {
+      const svg = document.getElementById("wheelSvg");
+      const step = 360 / segments.length;
+      let html = "";
+      segments.forEach((s, i) => {
+        const a1 = i * step, a2 = a1 + step;
+        const x1 = 100 + 100 * Math.cos((Math.PI * (a1 - 90)) / 180);
+        const y1 = 100 + 100 * Math.sin((Math.PI * (a1 - 90)) / 180);
+        const x2 = 100 + 100 * Math.cos((Math.PI * (a2 - 90)) / 180);
+        const y2 = 100 + 100 * Math.sin((Math.PI * (a2 - 90)) / 180);
+        const textAngle = a1 + step / 2;
+
+        html += `<path d="M 100 100 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z" fill="${s.color}" stroke="#222" stroke-width="1"/>
+        <g transform="rotate(${textAngle}, 100, 100)">
+          <text x="100" y="28" fill="#fff" font-size="8" font-weight="bold" text-anchor="middle" transform="rotate(90, 100, 28)">${s.label}</text>
+        </g>`;
+      });
+      svg.innerHTML = html;
+    }
+    window.onload = buildWheel;
+
+    // SYNTHESIZER AUDIO ENGINE (Musik + Effekte ohne externe Files)
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        startAmbientMusic();
+      }
+    }
+
+    function toggleAudio() {
+      initAudio();
+      audioActive = !audioActive;
+      if (audioCtx) {
+        if (audioActive) audioCtx.resume();
+        else audioCtx.suspend();
+      }
+    }
+
+    function startAmbientMusic() {
+      // Erzeugt eine dezente Synthwave-Hintergrundmelodie
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(55, audioCtx.currentTime); // A1 Note
+      gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+    }
+
+    function playTick() {
+      if (!audioActive) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    // LOGIN LOGIK
+    async function login() {
+      apiKey = document.getElementById("apiKeyInput").value.trim();
+      if (!apiKey) return alert("Key eingeben!");
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById("loginCard").classList.add("hidden");
+        document.getElementById("gameCard").classList.remove("hidden");
+        document.getElementById("userHeader").classList.remove("hidden");
+        document.getElementById("userName").textContent = data.name;
+        updateBalance(data.balance);
+      } else {
+        alert(data.error);
+      }
+    }
+
+    function updateBalance(val) {
+      balance = val;
+      document.getElementById("userBalance").textContent = balance;
+    }
+
+    // SPIN LOGIK
+    let currentRotation = 0;
+    async function spin() {
+      initAudio();
+      const btn = document.getElementById("spinBtn");
+      btn.disabled = true;
+
+      const res = await fetch('/api/spin', {
+        method: 'POST',
+        headers: { 'x-api-key': apiKey }
+      });
+      const data = await res.json();
+
+      // Welches Segment auswählen?
+      const matchingIndices = [];
+      segments.forEach((s, idx) => { if (s.value === data.prize) matchingIndices.push(idx); });
+      const targetIndex = matchingIndices[Math.floor(Math.random() * matchingIndices.length)];
+
+      const step = 360 / segments.length;
+      const stopAngle = 360 - (targetIndex * step + step / 2);
+      currentRotation += 5 * 360 + (stopAngle - (currentRotation % 360));
+
+      document.getElementById("wheelSvg").style.transform = `rotate(${currentRotation}deg)`;
+
+      let interval = setInterval(() => playTick(), 100);
+      setTimeout(() => clearInterval(interval), 3600);
+
+      setTimeout(() => {
+        updateBalance(data.newBalance);
+        if (data.prize > 0) {
+          confetti({ particleCount: 150, spread: 80 });
+          document.getElementById("resultText").textContent = `🎉 Gewonnen: ${data.prize} Xanax!`;
+        } else {
+          document.getElementById("resultText").textContent = "Niete! Versuch es gleich nochmal.";
+        }
+        btn.disabled = false;
+      }, 4000);
+    }
+
+    // ITEM AUSZAHLUNGS-ANFORDERUNG
+    async function openWithdrawModal() {
+      const amount = prompt("Wie viele Xanax möchtest du auf dein Torn-Konto auszahlen lassen?", balance);
+      if (!amount || amount <= 0) return;
+
+      const res = await fetch('/api/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+        body: JSON.stringify({ amount: parseInt(amount) })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        updateBalance(data.newBalance);
+      } else {
+        alert(data.error);
+      }
+    }
+  </script>
+</body>
+</html>
