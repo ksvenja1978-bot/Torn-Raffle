@@ -35,7 +35,6 @@
       overflow-x: hidden;
     }
 
-    /* Header & Branding */
     header {
       width: 100%;
       max-width: 900px;
@@ -203,7 +202,6 @@
       box-shadow: 0 0 15px rgba(255, 183, 3, 0.3);
     }
 
-    /* Glücksrad mit symmetrischen 10 Segmente à 36 Grad */
     .wheel-stage {
       display: flex;
       flex-direction: column;
@@ -229,20 +227,56 @@
       height: 320px;
       border-radius: 50%;
       border: 8px solid #222;
+      position: relative;
+      overflow: hidden;
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px var(--neon-gold);
       background: conic-gradient(
-        #1b1f24   0deg  36deg, /* 0 Xanax */
-        #00b4d8  36deg  72deg, /* 1 Xanax */
-        #1b1f24  72deg 108deg, /* 0 Xanax */
-        #00f5d4 108deg 144deg, /* 2 Xanax */
-        #1b1f24 144deg 180deg, /* 0 Xanax */
-        #00b4d8 180deg 216deg, /* 1 Xanax */
-        #1b1f24 216deg 252deg, /* 0 Xanax */
-        #ffb703 252deg 288deg, /* 5 Xanax */
-        #1b1f24 288deg 324deg, /* 0 Xanax */
-        #ff0055 324deg 360deg  /* 10 Xanax */
+        #1b1f24   0deg  36deg,
+        #00b4d8  36deg  72deg,
+        #1b1f24  72deg 108deg,
+        #00f5d4 108deg 144deg,
+        #1b1f24 144deg 180deg,
+        #00b4d8 180deg 216deg,
+        #1b1f24 216deg 252deg,
+        #ffb703 252deg 288deg,
+        #1b1f24 288deg 324deg,
+        #ff0055 324deg 360deg
       );
       transition: transform 4s cubic-bezier(0.15, 0.90, 0.20, 1.00);
+    }
+
+    .wheel-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100px;
+      height: 30px;
+      margin-top: -15px;
+      margin-left: -50px;
+      transform-origin: center center;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 15px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      color: #fff;
+      text-shadow: 0 0 4px #000, 0 2px 4px #000;
+      pointer-events: none;
+    }
+
+    .wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle, #222 0%, #000 100%);
+      border: 3px solid var(--neon-gold);
+      border-radius: 50%;
+      z-index: 5;
+      box-shadow: 0 0 10px rgba(0,0,0,0.8);
     }
 
     .game-result {
@@ -336,7 +370,19 @@
         <h2 style="color: var(--neon-gold);" id="lbl-wheel-title">Xanax Glücksrad</h2>
         <div class="wheel-stage">
           <div class="pointer"></div>
-          <div class="wheel" id="wheel"></div>
+          <div class="wheel" id="wheel">
+            <div class="wheel-label" style="transform: rotate(18deg) translate(90px);">0</div>
+            <div class="wheel-label" style="transform: rotate(54deg) translate(90px);">1 💊</div>
+            <div class="wheel-label" style="transform: rotate(90deg) translate(90px);">0</div>
+            <div class="wheel-label" style="transform: rotate(126deg) translate(90px);">2 💊</div>
+            <div class="wheel-label" style="transform: rotate(162deg) translate(90px);">0</div>
+            <div class="wheel-label" style="transform: rotate(198deg) translate(90px);">1 💊</div>
+            <div class="wheel-label" style="transform: rotate(234deg) translate(90px);">0</div>
+            <div class="wheel-label" style="transform: rotate(270deg) translate(90px);">5 💊</div>
+            <div class="wheel-label" style="transform: rotate(306deg) translate(90px);">0</div>
+            <div class="wheel-label" style="transform: rotate(342deg) translate(90px);">10 💊</div>
+            <div class="wheel-center"></div>
+          </div>
         </div>
         <button class="btn-casino" id="spinButton" style="font-size: 1.2rem; padding: 15px 40px;" onclick="spinWheel()">Drehen!</button>
         <div class="game-result" id="wheelResult"></div>
@@ -371,7 +417,6 @@
   </div>
 
   <script>
-    // --- Audio Engine ---
     let soundEnabled = true;
     let audioCtx = null;
 
@@ -417,7 +462,33 @@
       });
     }
 
-    // --- Translations ---
+    // Spezielle Fanfare für den 10er Jackpot
+    function playJackpotSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      const notes = [
+        { freq: 261.63, delay: 0 },
+        { freq: 329.63, delay: 0.1 },
+        { freq: 392.00, delay: 0.2 },
+        { freq: 523.25, delay: 0.3 },
+        { freq: 659.25, delay: 0.4 },
+        { freq: 783.99, delay: 0.5 },
+        { freq: 1046.50, delay: 0.65 }
+      ];
+      notes.forEach(note => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(note.freq, audioCtx.currentTime + note.delay);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime + note.delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.delay + 0.4);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + note.delay);
+        osc.stop(audioCtx.currentTime + note.delay + 0.4);
+      });
+    }
+
     const translations = {
       de: { loginTitle: "Casino Zugang", btnLogin: "Eintreten", statPlayers: "Spieler", statGames: "Gespielte Runden", statXanax: "Ausgezahlte Xanax", wheelTitle: "Xanax Glücksrad", btnSpin: "Drehen!", spinning: "Das Rad dreht sich...", win: "Gewonnen: ", noWin: "Leider Niete!" },
       en: { loginTitle: "Casino Entrance", btnLogin: "Enter", statPlayers: "Players", statGames: "Games Played", statXanax: "Xanax Paid", wheelTitle: "Xanax Fortune Wheel", btnSpin: "Spin!", spinning: "Spinning...", win: "Won: ", noWin: "No win!" },
@@ -430,7 +501,6 @@
     let spinning = false;
     let wheelRotation = 0;
 
-    // Gradbereiche für gleichmäßige 36°-Segmente mit Sicherheitsabstand
     const segmentAngles = {
       0:  [
         { min: 4, max: 32 }, 
@@ -490,7 +560,7 @@
       document.getElementById("appArea").classList.remove("hidden");
     }
 
-    // --- GAME 1: WHEEL ---
+    // GAME 1: WHEEL
     async function spinWheel() {
       if (spinning) return;
       spinning = true;
@@ -516,7 +586,6 @@
         if (!response.ok) throw new Error(data.error);
         prize = data.prize;
       } catch {
-        // Serverseitiger Fallback-Zufall (falls ohne Backend lokal getestet wird)
         const rand = Math.random() * 100;
         if (rand < 55) prize = 0;
         else if (rand < 90) prize = 1;
@@ -536,7 +605,11 @@
       setTimeout(() => clearInterval(interval), 3600);
 
       setTimeout(() => {
-        if (prize > 0) {
+        if (prize === 10) {
+          playJackpotSound();
+          confetti({ particleCount: 250, spread: 100, origin: { y: 0.5 } });
+          res.textContent = `🚨 JACKPOT! 10 Xanax Gewonnen! 🚨`;
+        } else if (prize > 0) {
           playWinSound();
           confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
           res.textContent = `${t.win} ${prize} Xanax! 🎉`;
@@ -548,7 +621,7 @@
       }, 4000);
     }
 
-    // --- GAME 2: SLOTS ---
+    // GAME 2: SLOTS
     function playSlots() {
       initAudio();
       const symbols = ["💊", "💎", "7️⃣", "🍋", "💣"];
@@ -575,8 +648,8 @@
           document.getElementById("reel3").textContent = r3;
 
           if (r1 === r2 && r2 === r3) {
-            playWinSound();
-            confetti({ particleCount: 150, spread: 90 });
+            playJackpotSound();
+            confetti({ particleCount: 200, spread: 90 });
             res.textContent = "JACKPOT! 3x Xanax Gewonnen!";
           } else {
             res.textContent = "Kein Gewinn. Versuch es noch einmal!";
@@ -586,7 +659,7 @@
       }, 100);
     }
 
-    // --- GAME 3: COIN FLIP ---
+    // GAME 3: COIN FLIP
     function playCoin(choice) {
       initAudio();
       const res = document.getElementById("coinResult");
