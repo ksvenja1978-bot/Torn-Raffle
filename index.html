@@ -35,7 +35,7 @@
       overflow-x: hidden;
     }
 
-    /* Top Bar & Branding */
+    /* Header & Branding */
     header {
       width: 100%;
       max-width: 900px;
@@ -86,13 +86,11 @@
       font-weight: bold;
     }
 
-    /* Container */
     .container {
       width: 100%;
       max-width: 900px;
     }
 
-    /* Card Styling */
     .casino-card {
       background: var(--card-bg);
       border: 1px solid var(--border-glow);
@@ -103,7 +101,6 @@
       margin-bottom: 25px;
     }
 
-    /* Login Form */
     .auth-group {
       display: flex;
       gap: 10px;
@@ -119,7 +116,6 @@
       border-radius: 6px;
       outline: none;
       font-size: 1rem;
-      transition: border 0.3s;
     }
 
     input[type="password"]:focus {
@@ -152,7 +148,6 @@
       transform: none;
     }
 
-    /* Stats Grid */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -181,7 +176,6 @@
       margin-top: 5px;
     }
 
-    /* Game Navigation Tabs */
     .game-tabs {
       display: flex;
       gap: 10px;
@@ -209,7 +203,7 @@
       box-shadow: 0 0 15px rgba(255, 183, 3, 0.3);
     }
 
-    /* Wheel Area */
+    /* Glücksrad mit symmetrischen 10 Segmente à 36 Grad */
     .wheel-stage {
       display: flex;
       flex-direction: column;
@@ -237,11 +231,16 @@
       border: 8px solid #222;
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), 0 0 15px var(--neon-gold);
       background: conic-gradient(
-        #111 0deg 198deg,          /* 0 Xanax */
-        #00b4d8 198deg 324deg,    /* 1 Xanax */
-        #00f5d4 324deg 349.2deg,  /* 2 Xanax */
-        #ffb703 349.2deg 358.2deg,/* 5 Xanax */
-        #ff0055 358.2deg 360deg   /* 10 Xanax */
+        #1b1f24   0deg  36deg, /* 0 Xanax */
+        #00b4d8  36deg  72deg, /* 1 Xanax */
+        #1b1f24  72deg 108deg, /* 0 Xanax */
+        #00f5d4 108deg 144deg, /* 2 Xanax */
+        #1b1f24 144deg 180deg, /* 0 Xanax */
+        #00b4d8 180deg 216deg, /* 1 Xanax */
+        #1b1f24 216deg 252deg, /* 0 Xanax */
+        #ffb703 252deg 288deg, /* 5 Xanax */
+        #1b1f24 288deg 324deg, /* 0 Xanax */
+        #ff0055 324deg 360deg  /* 10 Xanax */
       );
       transition: transform 4s cubic-bezier(0.15, 0.90, 0.20, 1.00);
     }
@@ -256,7 +255,6 @@
       text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
     }
 
-    /* Slots Placeholder Game */
     .slots-display {
       display: flex;
       justify-content: center;
@@ -432,13 +430,29 @@
     let spinning = false;
     let wheelRotation = 0;
 
+    // Gradbereiche für gleichmäßige 36°-Segmente mit Sicherheitsabstand
     const segmentAngles = {
-      0: { min: 0, max: 198 },
-      1: { min: 198, max: 324 },
-      2: { min: 324, max: 349.2 },
-      5: { min: 349.2, max: 358.2 },
-      10: { min: 358.2, max: 360 }
+      0:  [
+        { min: 4, max: 32 }, 
+        { min: 76, max: 104 }, 
+        { min: 148, max: 176 }, 
+        { min: 220, max: 248 }, 
+        { min: 292, max: 320 }
+      ],
+      1:  [
+        { min: 40, max: 68 }, 
+        { min: 184, max: 212 }
+      ],
+      2:  [{ min: 112, max: 140 }],
+      5:  [{ min: 256, max: 284 }],
+      10: [{ min: 328, max: 356 }]
     };
+
+    function getAngleForPrize(prize) {
+      const possibleSegments = segmentAngles[prize];
+      const selectedSegment = possibleSegments[Math.floor(Math.random() * possibleSegments.length)];
+      return selectedSegment.min + Math.random() * (selectedSegment.max - selectedSegment.min);
+    }
 
     document.getElementById("apiKey").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
 
@@ -490,15 +504,28 @@
       res.textContent = t.spinning;
 
       let prize = 0;
-      const rand = Math.random() * 100;
-      if (rand < 55) prize = 0;
-      else if (rand < 90) prize = 1;
-      else if (rand < 97) prize = 2;
-      else if (rand < 99.5) prize = 5;
-      else prize = 10;
+      try {
+        const response = await fetch('/api/spin', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-api-key': userApiKey 
+          }
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+        prize = data.prize;
+      } catch {
+        // Serverseitiger Fallback-Zufall (falls ohne Backend lokal getestet wird)
+        const rand = Math.random() * 100;
+        if (rand < 55) prize = 0;
+        else if (rand < 90) prize = 1;
+        else if (rand < 97) prize = 2;
+        else if (rand < 99.5) prize = 5;
+        else prize = 10;
+      }
 
-      const range = segmentAngles[prize];
-      const targetAngle = range.min + Math.random() * (range.max - range.min);
+      const targetAngle = getAngleForPrize(prize);
       const stopAngle = 360 - targetAngle;
       const fullSpins = (5 + Math.floor(Math.random() * 3)) * 360;
 
